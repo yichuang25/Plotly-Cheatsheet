@@ -5,6 +5,8 @@ cran
 github
 basic-charts
 scatter-plots
+basic-scatter-plot
+styled-scatter-plots
 line-plots
 bar-charts
 pie-charts

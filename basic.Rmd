@@ -4,8 +4,54 @@ output:
   html_document: default
 ---
 # Basic Charts
-
 ## Scatter Plots
+### Basic Scatter Plot
+
+```r
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter", mode = "markers")
+fig
+```
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter", mode = "markers")
+fig
+```
+### Styled Scatter Plots
+```r
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter",
+               mode = "markers"，
+               marker = list(size = 10,
+                             color = 'rgba(255, 182, 193, .9)',
+                             line = list(color = 'rgba(152, 0, 0, .8)',
+                                         width = 2)))
+fig <- fig %>% layout(title = 'Styled Scatter',
+         yaxis = list(zeroline = FALSE),
+         xaxis = list(zeroline = FALSE))
+
+fig
+```
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter",
+               marker = list(size = 10,
+                             color = 'rgba(255, 182, 193, .9)',
+                             line = list(color = 'rgba(152, 0, 0, .8)',
+                                         width = 2)))
+fig <- fig %>% layout(title = 'Styled Scatter',
+         yaxis = list(zeroline = FALSE),
+         xaxis = list(zeroline = FALSE))
+
+fig
+```
+
 
 ## Line Plots
 
