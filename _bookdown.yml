@@ -1,0 +1,24 @@
+book_filename: "finalproj"
+output_dir: docs
+delete_merged_file: true
+edit: https://github.com/yichuang25/Plotly-Cheatsheet/edit/main/%s
+view: https://github.com/yichuang25/Plotly-Cheatsheet/blob/main/%s
+language:
+  ui:
+    chapter_name: "Chapter "
+
+rmd_files: [
+  'index.Rmd',
+  'basic.Rmd',
+  'statistical.Rmd',
+  'scientific.Rmd',
+  'financial.Rmd',
+  'maps.Rmd',
+  'ml.Rmd',
+  '3d.Rmd',
+  'transform.Rmd',
+  'animations.Rmd'
+  ]
+
+
+before_chapter_script: "_common.R"

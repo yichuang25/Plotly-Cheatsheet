@@ -1,0 +1,28 @@
+--- 
+title: "Plotly Cheatsheet"
+author: "Taichen Zhou, Yichen Huang"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output:
+  rmdformats::downcute: 
+    self_contained: true
+    thumbnails: false
+    df_print: paged
+    lightbox: true
+    gallery: true
+    embed_fonts: true
+    default_style: "dark"
+    toc_depth: 4
+    highlight: tango
+    code_folding: "show"
+    code_download: true
+---
+
+```{css echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+code{
+  font-family: 'Fira Code'!important;
+}
+```
+
+# Introduction
