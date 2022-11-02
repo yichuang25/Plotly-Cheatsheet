@@ -4,3 +4,13 @@ output:
   html_document: default
 ---
 # Basic Charts
+
+## Scatter Plots
+
+## Line Plots
+
+## Bar Charts
+
+## Pie Charts
+
+## Bubble Charts

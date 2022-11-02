@@ -26,3 +26,19 @@ code{
 ```
 
 # Introduction
+
+## Getting Start
+**plotly** is an R package for creating interactive web-based graphs via the open source JavaScript graphing library plotly.js.
+As of version 2.0 (November 17, 2015), graphs created with the plotly R package are rendered locally through the htmlwidgets framework.
+
+## Installation
+### CRAN
+Use the install.package() function to install the plotly R package from CRAN. This version may not be the absolute latest version, so we recommend downloading from Github using the instructions below if you can.
+```
+install.packages('plotly')
+```
+### GitHub
+Alternatively, you can install the latest development version of plotly from GitHub via the devtools R package:
+```
+devtools::install_github("ropensci/plotly")
+```

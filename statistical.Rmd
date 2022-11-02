@@ -1,1 +1,10 @@
 # Statistical Charts
+## 2D Histograms
+
+## Box Plot
+
+## Histograms
+
+## Error Bars
+
+## Violin Plots
