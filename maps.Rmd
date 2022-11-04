@@ -1,1 +1,611 @@
 # Maps
+## Choropleth Maps
+### Choropleth Map Using GeoJSON
+```r
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
+counties <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/fips-unemp-16.csv"
+df <- read.csv(url2, colClasses=c(fips="character"))
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+fig <- plot_ly()
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=counties,
+    locations=df$fips,
+    z=df$unemp,
+    colorscale="Viridis",
+    zmin=0,
+    zmax=12,
+    marker=list(line=list(
+      width=0)
+    )
+  )
+fig <- fig %>% colorbar(title = "Unemployment Rate (%)")
+fig <- fig %>% layout(
+    title = "2016 US Unemployment by County"
+)
+
+fig <- fig %>% layout(
+    geo = g
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
+counties <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/fips-unemp-16.csv"
+df <- read.csv(url2, colClasses=c(fips="character"))
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+fig <- plot_ly()
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=counties,
+    locations=df$fips,
+    z=df$unemp,
+    colorscale="Viridis",
+    zmin=0,
+    zmax=12,
+    marker=list(line=list(
+      width=0)
+    )
+  )
+fig <- fig %>% colorbar(title = "Unemployment Rate (%)")
+fig <- fig %>% layout(
+    title = "2016 US Unemployment by County"
+)
+
+fig <- fig %>% layout(
+    geo = g
+  )
+
+fig
+
+```
+### Indexing by GeoJSON Properties
+```r
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/election.geojson'
+geojson <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/election.csv"
+df <- read.csv(url2)
+g <- list(
+  fitbounds = "locations",
+  visible = FALSE
+)
+fig <- plot_ly() 
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=geojson,
+    locations=df$district,
+    z=df$Bergeron,
+    colorscale="Viridis",
+    featureidkey="properties.district"
+  )
+fig <- fig %>% layout(
+    geo = g
+  )
+fig <- fig %>% colorbar(title = "Bergeron Votes")
+fig <- fig %>% layout(
+    title = "2013 Montreal Election"
+)
+fig
+```
+```{r}
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/election.geojson'
+geojson <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/election.csv"
+df <- read.csv(url2)
+g <- list(
+  fitbounds = "locations",
+  visible = FALSE
+)
+fig <- plot_ly() 
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=geojson,
+    locations=df$district,
+    z=df$Bergeron,
+    colorscale="Viridis",
+    featureidkey="properties.district"
+  )
+fig <- fig %>% layout(
+    geo = g
+  )
+fig <- fig %>% colorbar(title = "Bergeron Votes")
+fig <- fig %>% layout(
+    title = "2013 Montreal Election"
+)
+fig
+```
+### Customize choropleth chart
+```r
+library(plotly)
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df$hover <- with(df, paste(state, '<br>', "Beef", beef, "Dairy", dairy, "<br>",
+                           "Fruits", total.fruits, "Veggies", total.veggies,
+                           "<br>", "Wheat", wheat, "Corn", corn))
+# give state boundaries a white border
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states')
+fig <- fig %>% add_trace(
+    z = ~total.exports, text = ~hover, locations = ~code,
+    color = ~total.exports, colors = 'Purples'
+  )
+fig <- fig %>% colorbar(title = "Millions USD")
+fig <- fig %>% layout(
+    title = '2011 US Agriculture Exports by State<br>(Hover for breakdown)',
+    geo = g
+  )
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df$hover <- with(df, paste(state, '<br>', "Beef", beef, "Dairy", dairy, "<br>",
+                           "Fruits", total.fruits, "Veggies", total.veggies,
+                           "<br>", "Wheat", wheat, "Corn", corn))
+# give state boundaries a white border
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states')
+fig <- fig %>% add_trace(
+    z = ~total.exports, text = ~hover, locations = ~code,
+    color = ~total.exports, colors = 'Purples'
+  )
+fig <- fig %>% colorbar(title = "Millions USD")
+fig <- fig %>% layout(
+    title = '2011 US Agriculture Exports by State<br>(Hover for breakdown)',
+    geo = g
+  )
+
+fig
+```
+### World Choropleth Map
+```r
+
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+# specify map projection/options
+g <- list(
+  showframe = FALSE,
+  showcoastlines = FALSE,
+  projection = list(type = 'Mercator')
+)
+
+fig <- plot_geo(df)
+fig <- fig %>% add_trace(
+    z = ~GDP..BILLIONS., color = ~GDP..BILLIONS., colors = 'Blues',
+    text = ~COUNTRY, locations = ~CODE, marker = list(line = l)
+  )
+fig <- fig %>% colorbar(title = 'GDP Billions US$', tickprefix = '$')
+fig <- fig %>% layout(
+    title = '2014 Global GDP<br>Source:<a href="https://www.cia.gov/library/publications/the-world-factbook/fields/2195.html">CIA World Factbook</a>',
+    geo = g
+  )
+
+fig
+```
+```{r}
+
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+# specify map projection/options
+g <- list(
+  showframe = FALSE,
+  showcoastlines = FALSE,
+  projection = list(type = 'Mercator')
+)
+
+fig <- plot_geo(df)
+fig <- fig %>% add_trace(
+    z = ~GDP..BILLIONS., color = ~GDP..BILLIONS., colors = 'Blues',
+    text = ~COUNTRY, locations = ~CODE, marker = list(line = l)
+  )
+fig <- fig %>% colorbar(title = 'GDP Billions US$', tickprefix = '$')
+fig <- fig %>% layout(
+    title = '2014 Global GDP<br>Source:<a href="https://www.cia.gov/library/publications/the-world-factbook/fields/2195.html">CIA World Factbook</a>',
+    geo = g
+  )
+
+fig
+```
+
+## Scatter Plots on Maps
+### Basic Scatter on Map
+```r
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2011_february_us_airport_traffic.csv')
+
+# geo styling
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray95"),
+  subunitcolor = toRGB("gray85"),
+  countrycolor = toRGB("gray85"),
+  countrywidth = 0.5,
+  subunitwidth = 0.5
+)
+
+fig <- plot_geo(df, lat = ~lat, lon = ~long)
+fig <- fig %>% add_markers(
+    text = ~paste(airport, city, state, paste("Arrivals:", cnt), sep = "<br />"),
+    color = ~cnt, symbol = I("square"), size = I(8), hoverinfo = "text"
+  )
+fig <- fig %>% colorbar(title = "Incoming flights<br />February 2011")
+fig <- fig %>% layout(
+    title = 'Most trafficked US airports<br />(Hover for airport)', geo = g
+  )
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2011_february_us_airport_traffic.csv')
+
+# geo styling
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray95"),
+  subunitcolor = toRGB("gray85"),
+  countrycolor = toRGB("gray85"),
+  countrywidth = 0.5,
+  subunitwidth = 0.5
+)
+
+fig <- plot_geo(df, lat = ~lat, lon = ~long)
+fig <- fig %>% add_markers(
+    text = ~paste(airport, city, state, paste("Arrivals:", cnt), sep = "<br />"),
+    color = ~cnt, symbol = I("square"), size = I(8), hoverinfo = "text"
+  )
+fig <- fig %>% colorbar(title = "Incoming flights<br />February 2011")
+fig <- fig %>% layout(
+    title = 'Most trafficked US airports<br />(Hover for airport)', geo = g
+  )
+
+fig
+```
+### Style Scatter Map Layout
+```r
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv')
+
+# change default color scale title
+m <- list(colorbar = list(title = "Total Inches"))
+
+# geo styling
+g <- list(
+  scope = 'north america',
+  showland = TRUE,
+  landcolor = toRGB("grey83"),
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white"),
+  showlakes = TRUE,
+  lakecolor = toRGB("white"),
+  showsubunits = TRUE,
+  showcountries = TRUE,
+  resolution = 50,
+  projection = list(
+    type = 'conic conformal',
+    rotation = list(lon = -100)
+  ),
+  lonaxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(-140, -55),
+    dtick = 5
+  ),
+  lataxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(20, 60),
+    dtick = 5
+  )
+)
+
+fig <- plot_geo(df, lat = ~Lat, lon = ~Lon, color = ~Globvalue)
+fig <- fig %>% add_markers(
+    text = ~paste(df$Globvalue, "inches"), hoverinfo = "text"
+  )
+fig <- fig %>% layout(title = 'US Precipitation 06-30-2015<br>Source: NOAA', geo = g)
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv')
+
+# change default color scale title
+m <- list(colorbar = list(title = "Total Inches"))
+
+# geo styling
+g <- list(
+  scope = 'north america',
+  showland = TRUE,
+  landcolor = toRGB("grey83"),
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white"),
+  showlakes = TRUE,
+  lakecolor = toRGB("white"),
+  showsubunits = TRUE,
+  showcountries = TRUE,
+  resolution = 50,
+  projection = list(
+    type = 'conic conformal',
+    rotation = list(lon = -100)
+  ),
+  lonaxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(-140, -55),
+    dtick = 5
+  ),
+  lataxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(20, 60),
+    dtick = 5
+  )
+)
+
+fig <- plot_geo(df, lat = ~Lat, lon = ~Lon, color = ~Globvalue)
+fig <- fig %>% add_markers(
+    text = ~paste(df$Globvalue, "inches"), hoverinfo = "text"
+  )
+fig <- fig %>% layout(title = 'US Precipitation 06-30-2015<br>Source: NOAA', geo = g)
+
+fig
+```
+
+## Mapbox Density
+### Mapbox Access Token
+```r
+library(plotly)
+
+quakes = read.csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
+
+fig <- quakes 
+fig <- fig %>%
+  plot_ly(
+    type = 'densitymapbox',
+    lat = ~Latitude,
+    lon = ~Longitude,
+    coloraxis = 'coloraxis',
+    radius = 10) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style="stamen-terrain",
+      center= list(lon=180)), coloraxis = list(colorscale = "Viridis"))
+
+fig
+```
+```{r}
+library(plotly)
+
+quakes = read.csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
+
+fig <- quakes 
+fig <- fig %>%
+  plot_ly(
+    type = 'densitymapbox',
+    lat = ~Latitude,
+    lon = ~Longitude,
+    coloraxis = 'coloraxis',
+    radius = 10) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style="stamen-terrain",
+      center= list(lon=180)), coloraxis = list(colorscale = "Viridis"))
+
+fig
+```
+
+
+## Mapbox Layers
+### OpenStreetMap Tiles, no Token Needed
+```r
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    marker = list(color = "fuchsia"),
+    type = 'scattermapbox',
+    hovertext = us_cities[,"City"]) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style = 'open-street-map',
+      zoom =2.5,
+      center = list(lon = -88, lat = 34))) 
+
+fig
+```
+```{r}
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    marker = list(color = "fuchsia"),
+    type = 'scattermapbox',
+    hovertext = us_cities[,"City"]) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style = 'open-street-map',
+      zoom =2.5,
+      center = list(lon = -88, lat = 34))) 
+
+fig
+```
+### Base Map Below A Trace: No Token Needed
+```r
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    type = "scattermapbox",
+    hovertext = us_cities[,"City"],
+    marker = list(color = "fuchsia")) 
+fig <- fig %>%
+  layout(mapbox= list(
+    style = "white-bg",
+    zoom = 3,
+    center = list(lon = -93 ,lat= 41),
+    layers = list(list(
+      below = 'traces',
+      sourcetype = "raster",
+      source = list("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}")))))
+
+fig
+```
+```{r}
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    type = "scattermapbox",
+    hovertext = us_cities[,"City"],
+    marker = list(color = "fuchsia")) 
+fig <- fig %>%
+  layout(mapbox= list(
+    style = "white-bg",
+    zoom = 3,
+    center = list(lon = -93 ,lat= 41),
+    layers = list(list(
+      below = 'traces',
+      sourcetype = "raster",
+      source = list("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}")))))
+
+fig
+```
+
+## Bubble Maps
+### United States Bubble Map
+```r
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_us_cities.csv')
+
+df$q <- with(df, cut(pop, quantile(pop)))
+levels(df$q) <- paste(c("1st", "2nd", "3rd", "4th", "5th"), "Quantile")
+df$q <- as.ordered(df$q)
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray85"),
+  subunitwidth = 1,
+  countrywidth = 1,
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white")
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states', sizes = c(1, 250))
+fig <- fig %>% add_markers(
+    x = ~lon, y = ~lat, size = ~pop, color = ~q, hoverinfo = "text",
+    text = ~paste(df$name, "<br />", df$pop/1e6, " million")
+  )
+fig <- fig %>% layout(title = '2014 US city populations<br>(Click legend to toggle)', geo = g)
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_us_cities.csv')
+
+df$q <- with(df, cut(pop, quantile(pop)))
+levels(df$q) <- paste(c("1st", "2nd", "3rd", "4th", "5th"), "Quantile")
+df$q <- as.ordered(df$q)
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray85"),
+  subunitwidth = 1,
+  countrywidth = 1,
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white")
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states', sizes = c(1, 250))
+fig <- fig %>% add_markers(
+    x = ~lon, y = ~lat, size = ~pop, color = ~q, hoverinfo = "text",
+    text = ~paste(df$name, "<br />", df$pop/1e6, " million")
+  )
+fig <- fig %>% layout(title = '2014 US city populations<br>(Click legend to toggle)', geo = g)
+
+fig
+```
+
+
