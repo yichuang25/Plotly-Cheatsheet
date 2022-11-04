@@ -1,1 +1,590 @@
 # Financial Charts
+## Time Series and Date Axess
+### Time Series using Axes of type date
+```r
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', width = 900)
+
+
+fig
+```
+```{r}
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', width = 900)
+
+
+fig
+```
+### Configuring Tick Labels
+```r
+library(tidyquant)
+library(plotly)
+tickers = c("GOOG", "AAPL", "AMZN", "META", "NFLX", "MSFT")
+for (i in tickers){
+  getSymbols(i,
+             from = "2020-01-01",
+             to = "2021-12-31")}
+stock <- data.frame(GOOG$GOOG.Adjusted,
+                    AAPL$AAPL.Adjusted,
+                    AMZN$AMZN.Adjusted,
+                    META$META.Adjusted,
+                    NFLX$NFLX.Adjusted,
+                    MSFT$MSFT.Adjusted)
+stock$GOOG.Adjusted <- stock$GOOG.Adjusted/stock$GOOG.Adjusted[1]
+stock$AAPL.Adjusted <- stock$AAPL.Adjusted/stock$AAPL.Adjusted[1]
+stock$AMZN.Adjusted <- stock$AMZN.Adjusted/stock$AMZN.Adjusted[1]
+stock$META.Adjusted <- stock$META.Adjusted/stock$META.Adjusted[1]
+stock$NFLX.Adjusted <- stock$NFLX.Adjusted/stock$NFLX.Adjusted[1]
+stock$MSFT.Adjusted <- stock$MSFT.Adjusted/stock$MSFT.Adjusted[1]
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(tickers,'Dates')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Dates, y = ~GOOG, name = 'GOOG')%>%
+  add_trace(x = ~Dates, y = ~AAPL, name = 'AAPL')%>%
+  add_trace(x = ~Dates, y = ~AMZN, name = 'AMZN')%>%
+  add_trace(x = ~Dates, y = ~META, name = 'META')%>%
+  add_trace(x = ~Dates, y = ~NFLX, name = 'NFLX')%>%
+  add_trace(x = ~Dates, y = ~MSFT, name = 'MSFT')%>%
+  layout(title = 'custom tick labels',legend=list(title=list(text='variable')),
+         xaxis = list(dtick = "M1", tickformat="%b<br>%Y"), width = 1000)
+options(warn = -1)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6')
+
+
+fig
+```
+```{r}
+library(tidyquant)
+library(plotly)
+tickers = c("GOOG", "AAPL", "AMZN", "META", "NFLX", "MSFT")
+for (i in tickers){
+  getSymbols(i,
+             from = "2020-01-01",
+             to = "2021-12-31")}
+stock <- data.frame(GOOG$GOOG.Adjusted,
+                    AAPL$AAPL.Adjusted,
+                    AMZN$AMZN.Adjusted,
+                    META$META.Adjusted,
+                    NFLX$NFLX.Adjusted,
+                    MSFT$MSFT.Adjusted)
+stock$GOOG.Adjusted <- stock$GOOG.Adjusted/stock$GOOG.Adjusted[1]
+stock$AAPL.Adjusted <- stock$AAPL.Adjusted/stock$AAPL.Adjusted[1]
+stock$AMZN.Adjusted <- stock$AMZN.Adjusted/stock$AMZN.Adjusted[1]
+stock$META.Adjusted <- stock$META.Adjusted/stock$META.Adjusted[1]
+stock$NFLX.Adjusted <- stock$NFLX.Adjusted/stock$NFLX.Adjusted[1]
+stock$MSFT.Adjusted <- stock$MSFT.Adjusted/stock$MSFT.Adjusted[1]
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(tickers,'Dates')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Dates, y = ~GOOG, name = 'GOOG')%>%
+  add_trace(x = ~Dates, y = ~AAPL, name = 'AAPL')%>%
+  add_trace(x = ~Dates, y = ~AMZN, name = 'AMZN')%>%
+  add_trace(x = ~Dates, y = ~META, name = 'META')%>%
+  add_trace(x = ~Dates, y = ~NFLX, name = 'NFLX')%>%
+  add_trace(x = ~Dates, y = ~MSFT, name = 'MSFT')%>%
+  layout(title = 'custom tick labels',legend=list(title=list(text='variable')),
+         xaxis = list(dtick = "M1", tickformat="%b<br>%Y"), width = 1000)
+options(warn = -1)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6')
+
+
+fig
+```
+### Time Series with Range Selector Buttons
+```r
+
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F, title='Time Series with Range Slider and Selectors',
+         xaxis = list(rangeslider = list(visible = T),
+                      rangeselector=list(
+                        buttons=list(
+                          list(count=1, label="1m", step="month", stepmode="backward"),
+                          list(count=6, label="6m", step="month", stepmode="backward"),
+                          list(count=1, label="YTD", step="year", stepmode="todate"),
+                          list(count=1, label="1y", step="year", stepmode="backward"),
+                          list(step="all")
+                        ))))
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', margin = 0.1, width = 900)
+fig
+```
+```{r}
+
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F, title='Time Series with Range Slider and Selectors',
+         xaxis = list(rangeslider = list(visible = T),
+                      rangeselector=list(
+                        buttons=list(
+                          list(count=1, label="1m", step="month", stepmode="backward"),
+                          list(count=6, label="6m", step="month", stepmode="backward"),
+                          list(count=1, label="YTD", step="year", stepmode="todate"),
+                          list(count=1, label="1y", step="year", stepmode="backward"),
+                          list(step="all")
+                        ))))
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', margin = 0.1, width = 900)
+fig
+```
+
+## Candlestick Charts
+### Basic Candlestick
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+# basic example of ohlc charts
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic Candlestick Chart")
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+# basic example of ohlc charts
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic Candlestick Chart")
+
+fig
+```
+### Customise the fig ure with Shapes and Annotations
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+)
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Apple Stock",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+)
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Apple Stock",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+
+## OHLC Charts
+### Basic OHLC Chart
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic OHLC Chart",
+         xaxis = list(rangeslider = list(visible = F)))
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic OHLC Chart",
+         xaxis = list(rangeslider = list(visible = F)))
+
+fig
+```
+### Customise the Figure with Shapes and Annotations
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+          )
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+          )
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Custom Colors",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+          )
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+          )
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Custom Colors",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+
+
+## Waterfall Charts
+### Basic Waterfall Chart
+```r
+library(plotly)
+
+x= list("Sales", "Consulting", "Net revenue", "Purchases", "Other expenses", "Profit before tax")
+measure= c("relative", "relative", "total", "relative", "relative", "total")
+text= c("+60", "+80", "", "-40", "-20", "Total")
+y= c(60, 80, 0, -40, -20, 0)
+data = data.frame(x=factor(x,levels=x),measure,text,y)
+
+fig <- plot_ly(
+  data, name = "20", type = "waterfall", measure = ~measure,
+  x = ~x, textposition = "outside", y= ~y, text =~text,
+  connector = list(line = list(color= "rgb(63, 63, 63)"))) 
+fig <- fig %>%
+  layout(title = "Profit and loss statement 2018",
+        xaxis = list(title = ""),
+        yaxis = list(title = ""),
+        autosize = TRUE,
+        showlegend = TRUE)
+
+fig
+```
+```{r}
+library(plotly)
+
+x= list("Sales", "Consulting", "Net revenue", "Purchases", "Other expenses", "Profit before tax")
+measure= c("relative", "relative", "total", "relative", "relative", "total")
+text= c("+60", "+80", "", "-40", "-20", "Total")
+y= c(60, 80, 0, -40, -20, 0)
+data = data.frame(x=factor(x,levels=x),measure,text,y)
+
+fig <- plot_ly(
+  data, name = "20", type = "waterfall", measure = ~measure,
+  x = ~x, textposition = "outside", y= ~y, text =~text,
+  connector = list(line = list(color= "rgb(63, 63, 63)"))) 
+fig <- fig %>%
+  layout(title = "Profit and loss statement 2018",
+        xaxis = list(title = ""),
+        yaxis = list(title = ""),
+        autosize = TRUE,
+        showlegend = TRUE)
+
+fig
+```
+
+## Funnel Charts
+```r
+# Need to install plotly from Github to get funnel plots
+devtools::install_github("ropensci/plotly")
+```
+### Basic Funnel Plot
+```r
+library(plotly)
+
+fig <- plot_ly() 
+fig <- fig %>%
+  add_trace(
+  type = "funnel",
+  y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+  x = c(39, 27.4, 20.6, 11, 2)) 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent")))
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly() 
+fig <- fig %>%
+  add_trace(
+  type = "funnel",
+  y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+  x = c(39, 27.4, 20.6, 11, 2)) 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent")))
+
+fig
+```
+### Stacked Funnel Plot
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = "funnel",
+    name = 'Montreal',
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price"),
+    x = c(120, 60, 30, 20),
+    textinfo = "value+percent initial") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Toronto',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+    x = c(100, 60, 40, 30, 20),
+    textposition = "inside",
+    textinfo = "value+percent previous") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Vancouver',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized"),
+  x = c(90, 70, 50, 30, 10, 5),
+  textposition = "outside",
+  textinfo = "value+percent total") 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized")))
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = "funnel",
+    name = 'Montreal',
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price"),
+    x = c(120, 60, 30, 20),
+    textinfo = "value+percent initial") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Toronto',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+    x = c(100, 60, 40, 30, 20),
+    textposition = "inside",
+    textinfo = "value+percent previous") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Vancouver',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized"),
+  x = c(90, 70, 50, 30, 10, 5),
+  textposition = "outside",
+  textinfo = "value+percent total") 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized")))
+
+fig
+```
+### Basic Area Funnel Plot
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = "funnelarea",
+  text = c("The 1st","The 2nd", "The 3rd", "The 4th", "The 5th"),
+  values = c(5, 4, 3, 2, 1))
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = "funnelarea",
+  text = c("The 1st","The 2nd", "The 3rd", "The 4th", "The 5th"),
+  values = c(5, 4, 3, 2, 1))
+
+fig
+```
