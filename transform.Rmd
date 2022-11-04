@@ -1,1 +1,378 @@
 # Transforms
+## Filter
+### Basic Example
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = rownames(mtcars),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'filter',
+      target = 'y',
+      operation = '>',
+      value = mean(mtcars$qsec)
+    )
+  )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = rownames(mtcars),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'filter',
+      target = 'y',
+      operation = '>',
+      value = mean(mtcars$qsec)
+    )
+  )
+)
+
+fig
+```
+
+
+## Group
+### Basic Example
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = paste("Make: ", rownames(mtcars),
+               "<br>hp: ", mtcars$hp,
+               "<br>qsec: ", mtcars$qsec,
+               "<br>Cyl: ", mtcars$cyl),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'groupby',
+      groups = mtcars$cyl,
+      styles = list(
+        list(target = 4, value = list(marker =list(color = 'blue'))),
+        list(target = 6, value = list(marker =list(color = 'red'))),
+        list(target = 8, value = list(marker =list(color = 'black')))
+      )
+      )
+    )
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = paste("Make: ", rownames(mtcars),
+               "<br>hp: ", mtcars$hp,
+               "<br>qsec: ", mtcars$qsec,
+               "<br>Cyl: ", mtcars$cyl),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'groupby',
+      groups = mtcars$cyl,
+      styles = list(
+        list(target = 4, value = list(marker =list(color = 'blue'))),
+        list(target = 6, value = list(marker =list(color = 'red'))),
+        list(target = 8, value = list(marker =list(color = 'black')))
+      )
+      )
+    )
+  )
+
+fig
+```
+
+
+## Aggregation
+### Basic Example
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = diamonds$cut,
+  y = diamonds$price,
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'aggregate',
+      groups = diamonds$cut,
+      aggregations = list(
+        list(
+          target = 'y', func = 'sum', enabled = T
+        )
+      )
+    )
+  )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = diamonds$cut,
+  y = diamonds$price,
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'aggregate',
+      groups = diamonds$cut,
+      aggregations = list(
+        list(
+          target = 'y', func = 'sum', enabled = T
+        )
+      )
+    )
+  )
+)
+
+fig
+```
+### Histogram Binning
+```r
+library(plotly)
+
+df <- read.csv("https://plotly.com/~public.health/17.csv", skipNul = TRUE, encoding = "UTF-8")
+
+labels <- function(size, label) {
+  list(
+    args = c("xbins.size", size), 
+    label = label, 
+    method = "restyle"
+  )
+}
+
+fig <- df %>%
+  plot_ly(
+    x = ~date,
+    autobinx = FALSE, 
+    autobiny = TRUE, 
+    marker = list(color = "rgb(68, 68, 68)"), 
+    name = "date", 
+    type = "histogram", 
+    xbins = list(
+      end = "2016-12-31 12:00", 
+      size = "M1", 
+      start = "1983-12-31 12:00"
+    )
+  )
+fig <- fig %>% layout(
+  paper_bgcolor = "rgb(240, 240, 240)", 
+  plot_bgcolor = "rgb(240, 240, 240)", 
+  title = "<b>Shooting Incidents</b><br>use dropdown to change bin size",
+  xaxis = list(
+    type = 'date'
+  ),
+  yaxis = list(
+    title = "Incidents"
+  ),
+  updatemenus = list(
+    list(
+      x = 0.1, 
+      y = 1.15,
+      active = 1, 
+      showactive = TRUE,
+      buttons = list(
+        labels("D1", "Day"),
+        labels("M1", "Month"),
+        labels("M6", "Half Year"),
+        labels("M12", "Year")
+      )
+    )
+  )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://plotly.com/~public.health/17.csv", skipNul = TRUE, encoding = "UTF-8")
+
+labels <- function(size, label) {
+  list(
+    args = c("xbins.size", size), 
+    label = label, 
+    method = "restyle"
+  )
+}
+
+fig <- df %>%
+  plot_ly(
+    x = ~date,
+    autobinx = FALSE, 
+    autobiny = TRUE, 
+    marker = list(color = "rgb(68, 68, 68)"), 
+    name = "date", 
+    type = "histogram", 
+    xbins = list(
+      end = "2016-12-31 12:00", 
+      size = "M1", 
+      start = "1983-12-31 12:00"
+    )
+  )
+fig <- fig %>% layout(
+  paper_bgcolor = "rgb(240, 240, 240)", 
+  plot_bgcolor = "rgb(240, 240, 240)", 
+  title = "<b>Shooting Incidents</b><br>use dropdown to change bin size",
+  xaxis = list(
+    type = 'date'
+  ),
+  yaxis = list(
+    title = "Incidents"
+  ),
+  updatemenus = list(
+    list(
+      x = 0.1, 
+      y = 1.15,
+      active = 1, 
+      showactive = TRUE,
+      buttons = list(
+        labels("D1", "Day"),
+        labels("M1", "Month"),
+        labels("M6", "Half Year"),
+        labels("M12", "Year")
+      )
+    )
+  )
+)
+
+fig
+```
+### Mapping with Aggregations
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/worldhappiness.csv")
+
+s <- schema()
+agg <- s$transforms$aggregate$attributes$aggregations$items$aggregation$func$values
+
+
+l = list()
+for (i in 1:length(agg)) {
+  ll = list(method = "restyle",
+            args = list('transforms[0].aggregations[0].func', agg[i]),
+            label = agg[i]) 
+  l[[i]] = ll
+}
+
+fig <- df %>%
+  plot_ly(
+    type = 'choropleth',
+    locationmode = 'country names',
+    locations = ~Country,
+    z = ~HappinessScore,
+    autocolorscale = F,
+    reversescale = T,
+    colorscale = 'Portland', 
+    transforms = list(list(
+      type = 'aggregate',
+      groups = ~Country,
+      aggregations = list(
+        list(target = 'z', func = 'sum', enabled = T)
+      )
+    ))
+  )
+fig <- fig %>% layout(
+    title = "<b>World Happiness</b>",
+    geo = list(
+      showframe = F,
+      showcoastlines = F
+    ),
+    updatemenus = list(
+      list(
+        x = 0.25,
+        y = 1.04,
+        xref = 'paper',
+        yref = 'paper',
+        yanchor = 'top',
+        buttons = l
+      )
+    )
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/worldhappiness.csv")
+
+s <- schema()
+agg <- s$transforms$aggregate$attributes$aggregations$items$aggregation$func$values
+
+
+l = list()
+for (i in 1:length(agg)) {
+  ll = list(method = "restyle",
+            args = list('transforms[0].aggregations[0].func', agg[i]),
+            label = agg[i]) 
+  l[[i]] = ll
+}
+
+fig <- df %>%
+  plot_ly(
+    type = 'choropleth',
+    locationmode = 'country names',
+    locations = ~Country,
+    z = ~HappinessScore,
+    autocolorscale = F,
+    reversescale = T,
+    colorscale = 'Portland', 
+    transforms = list(list(
+      type = 'aggregate',
+      groups = ~Country,
+      aggregations = list(
+        list(target = 'z', func = 'sum', enabled = T)
+      )
+    ))
+  )
+fig <- fig %>% layout(
+    title = "<b>World Happiness</b>",
+    geo = list(
+      showframe = F,
+      showcoastlines = F
+    ),
+    updatemenus = list(
+      list(
+        x = 0.25,
+        y = 1.04,
+        xref = 'paper',
+        yref = 'paper',
+        yanchor = 'top',
+        buttons = l
+      )
+    )
+  )
+
+fig
+```
+

@@ -74,4 +74,12 @@ maps
 artificial-intelligence-and-machine-learning
 d-charts
 transforms
+filter
+basic-example
+group
+basic-example-1
+aggregation
+basic-example-2
+histogram-binning
+mapping-with-aggregations
 animations
