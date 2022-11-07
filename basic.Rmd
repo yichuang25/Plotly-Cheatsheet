@@ -1,7 +1,7 @@
 ---
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 # Basic Charts
 ## Scatter Plots
@@ -21,6 +21,7 @@ fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter", mode = "marker
 fig
 ```
 ### Styled Scatter Plots
+
 ```r
 library(plotly)
 

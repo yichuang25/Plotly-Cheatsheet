@@ -29,3 +29,9 @@ artificial-intelligence-and-machine-learning
 d-charts
 transforms
 animations
+basic-boxplot
+horizontal-boxplot
+adding-jittered-points
+several-box-plots
+basic-histograms
+stacked-histogram
