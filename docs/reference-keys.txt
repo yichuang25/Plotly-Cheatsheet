@@ -35,3 +35,5 @@ adding-jittered-points
 several-box-plots
 basic-histograms
 stacked-histogram
+basic-3d-scatter-plot
+basic-3d-surface-plot
