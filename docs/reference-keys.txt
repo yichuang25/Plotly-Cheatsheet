@@ -31,8 +31,13 @@ style-sankey-diagram
 statistical-charts
 d-histograms
 box-plot
+basic-boxplot
+horizontal-boxplot
+adding-jittered-points
+several-box-plots
 histograms
-error-bars
+basic-histograms
+stacked-histogram
 violin-plots
 scientific-charts
 log-plots
@@ -88,6 +93,8 @@ bubble-maps
 united-states-bubble-map
 artificial-intelligence-and-machine-learning
 d-charts
+basic-3d-scatter-plot
+basic-3d-surface-plot
 transforms
 filter
 basic-example
@@ -98,11 +105,3 @@ basic-example-2
 histogram-binning
 mapping-with-aggregations
 animations
-basic-boxplot
-horizontal-boxplot
-adding-jittered-points
-several-box-plots
-basic-histograms
-stacked-histogram
-basic-3d-scatter-plot
-basic-3d-surface-plot
