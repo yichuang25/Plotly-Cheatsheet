@@ -1,10 +1,670 @@
 # Scientific Charts
 ## Log Plots
+### Log Axes
+```r
+library(plotly)
+d <- diamonds[sample(nrow(diamonds), 1000), ]
+# without log scales
+fig <- plot_ly(d, x = ~carat, y = ~price) %>% add_markers()
+
+fig
+```
+```{r}
+library(plotly)
+d <- diamonds[sample(nrow(diamonds), 1000), ]
+# without log scales
+fig <- plot_ly(d, x = ~carat, y = ~price) %>% add_markers()
+
+fig
+```
+```r
+# with log scales
+fig <- layout(fig, xaxis = list(type = "log"),
+       yaxis = list(type = "log"))
+
+fig
+```
+```{r}
+# with log scales
+fig <- layout(fig, xaxis = list(type = "log"),
+       yaxis = list(type = "log"))
+
+fig
+```
 
 ## Contour Plots
+### Basic Contour
+```r
+library(plotly)
+
+fig <- plot_ly(z = ~volcano, type = "contour")
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(z = ~volcano, type = "contour")
+
+fig
+```
+### Smoothing Contour Coloring
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'contour',
+  z = matrix(c(10, 10.625, 12.5, 15.625, 20, 5.625, 6.25, 8.125, 
+               11.25, 15.625, 2.5, 3.125, 5, 8.125, 12.5, 0.625, 
+               1.25, 3.125, 6.25, 10.625, 0, 0.625, 2.5, 5.625, 
+               10), nrow=5, ncol=5),
+  contours = list(
+    coloring = 'heatmap'
+  )
+)
+
+fig
+
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'contour',
+  z = matrix(c(10, 10.625, 12.5, 15.625, 20, 5.625, 6.25, 8.125, 
+               11.25, 15.625, 2.5, 3.125, 5, 8.125, 12.5, 0.625, 
+               1.25, 3.125, 6.25, 10.625, 0, 0.625, 2.5, 5.625, 
+               10), nrow=5, ncol=5),
+  contours = list(
+    coloring = 'heatmap'
+  )
+)
+
+fig
+
+```
 
 ## Heatmaps
+### Basic Heatmap
+```r
+library(plotly)
+fig <- plot_ly(z = volcano, type = "heatmap")
 
-## Network Graph
+fig
+```
+```{r}
+library(plotly)
+fig <- plot_ly(z = volcano, type = "heatmap")
 
-## Ternary Contour Plot
+fig
+```
+### Sequential Colorscales: Greys
+```r
+fig <- plot_ly(z = volcano, colors = "Greys", type = "heatmap")
+
+fig
+```
+```{r}
+fig <- plot_ly(z = volcano, colors = "Greys", type = "heatmap")
+
+fig
+```
+
+## Parallel Coordinates
+### Basic Parallel Cordinates Plots
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/iris.csv")
+
+fig <- df %>% plot_ly(type = 'parcoords',
+          line = list(color = ~species_id,
+                      colorscale = list(c(0,'red'),c(0.5,'green'),c(1,'blue'))),
+          dimensions = list(
+            list(range = c(2,4.5),
+                 label = 'Sepal Width', values = ~sepal_width),
+            list(range = c(4,8),
+                 constraintrange = c(5,6),
+                 label = 'Sepal Length', values = ~sepal_length),
+            list(range = c(0,2.5),
+                 label = 'Petal Width', values = ~petal_width),
+            list(range = c(1,7),
+                 label = 'Petal Length', values = ~petal_length)
+            )
+          )
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/iris.csv")
+
+fig <- df %>% plot_ly(type = 'parcoords',
+          line = list(color = ~species_id,
+                      colorscale = list(c(0,'red'),c(0.5,'green'),c(1,'blue'))),
+          dimensions = list(
+            list(range = c(2,4.5),
+                 label = 'Sepal Width', values = ~sepal_width),
+            list(range = c(4,8),
+                 constraintrange = c(5,6),
+                 label = 'Sepal Length', values = ~sepal_length),
+            list(range = c(0,2.5),
+                 label = 'Petal Width', values = ~petal_width),
+            list(range = c(1,7),
+                 label = 'Petal Length', values = ~petal_length)
+            )
+          )
+
+fig
+```
+### Advanced Parallel Coordinates Plot
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/parcoords_data.csv")
+
+fig <- df %>%
+  plot_ly(width = 1000, height = 600) 
+fig <- fig %>% add_trace(type = 'parcoords',
+          line = list(color = ~colorVal,
+                      colorscale = 'Jet',
+                      showscale = TRUE,
+                      reversescale = TRUE,
+                      cmin = -4000,
+                      cmax = -100),
+          dimensions = list(
+            list(range = c(~min(blockHeight),~max(blockHeight)),
+                 constraintrange = c(100000,150000),
+                 label = 'Block Height', values = ~blockHeight),
+            list(range = c(~min(blockWidth),~max(blockWidth)),
+                 label = 'Block Width', values = ~blockWidth),
+            list(tickvals = c(0,0.5,1,2,3),
+                 ticktext = c('A','AB','B','Y','Z'),
+                 label = 'Cyclinder Material', values = ~cycMaterial),
+            list(range = c(-1,4),
+                 tickvals = c(0,1,2,3),
+                 label = 'Block Material', values = ~blockMaterial),
+            list(range = c(~min(totalWeight),~max(totalWeight)),
+                 visible = TRUE,
+                 label = 'Total Weight', values = ~totalWeight),
+            list(range = c(~min(assemblyPW),~max(assemblyPW)),
+                 label = 'Assembly Penalty Weight', values = ~assemblyPW),
+            list(range = c(~min(HstW),~max(HstW)),
+                 label = 'Height st Width', values = ~HstW),
+            list(range = c(~min(minHW),~max(minHW)),
+                 label = 'Min Height Width', values = ~minHW),
+            list(range = c(~min(minWD),~max(minWD)),
+                 label = 'Min Width Diameter', values = ~minWD),
+            list(range = c(~min(rfBlock),~max(rfBlock)),
+                 label = 'RF Block', values = ~rfBlock)
+            )
+          )
+
+
+fig
+
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/parcoords_data.csv")
+
+fig <- df %>%
+  plot_ly(width = 1000, height = 600) 
+fig <- fig %>% add_trace(type = 'parcoords',
+          line = list(color = ~colorVal,
+                      colorscale = 'Jet',
+                      showscale = TRUE,
+                      reversescale = TRUE,
+                      cmin = -4000,
+                      cmax = -100),
+          dimensions = list(
+            list(range = c(~min(blockHeight),~max(blockHeight)),
+                 constraintrange = c(100000,150000),
+                 label = 'Block Height', values = ~blockHeight),
+            list(range = c(~min(blockWidth),~max(blockWidth)),
+                 label = 'Block Width', values = ~blockWidth),
+            list(tickvals = c(0,0.5,1,2,3),
+                 ticktext = c('A','AB','B','Y','Z'),
+                 label = 'Cyclinder Material', values = ~cycMaterial),
+            list(range = c(-1,4),
+                 tickvals = c(0,1,2,3),
+                 label = 'Block Material', values = ~blockMaterial),
+            list(range = c(~min(totalWeight),~max(totalWeight)),
+                 visible = TRUE,
+                 label = 'Total Weight', values = ~totalWeight),
+            list(range = c(~min(assemblyPW),~max(assemblyPW)),
+                 label = 'Assembly Penalty Weight', values = ~assemblyPW),
+            list(range = c(~min(HstW),~max(HstW)),
+                 label = 'Height st Width', values = ~HstW),
+            list(range = c(~min(minHW),~max(minHW)),
+                 label = 'Min Height Width', values = ~minHW),
+            list(range = c(~min(minWD),~max(minWD)),
+                 label = 'Min Width Diameter', values = ~minWD),
+            list(range = c(~min(rfBlock),~max(rfBlock)),
+                 label = 'RF Block', values = ~rfBlock)
+            )
+          )
+
+
+fig
+
+```
+## Polar Charts
+### Basic Polar Charts
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatterpolar',
+  r = c(0,1,2,2),
+  theta = c(0,45,90,0),
+  mode = 'markers'
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatterpolar',
+  r = c(0,1,2,2),
+  theta = c(0,45,90,0),
+  mode = 'markers'
+)
+
+fig
+```
+### Line Polar Charts
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/polar_dataset.csv")
+
+fig <- plot_ly(
+  df,
+  type = 'scatterpolar',
+  mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x1,
+    theta = ~y,
+    name = 'Figure8',
+    line = list(
+      color = 'peru'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x2,
+    theta = ~y,
+    name = 'Cardioid',
+    line = list(
+      color = 'darkviolet'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x3,
+    theta = ~y,
+    name = 'Hypercardioid',
+    line = list(
+      color = 'deepskyblue'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x4,
+    theta = ~y,
+    name = 'Subcardioid',
+    line = list(
+      color = 'orangered'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x5,
+    theta = ~y,
+    name = 'Supercardioid',
+    line = list(
+      color = 'green'
+    )
+  ) 
+
+fig <- fig %>%
+  layout(
+    title = 'Mic Patterns',
+    font = list(
+      family = 'Arial',
+      size = 12,
+      color = '#000'
+    ),
+    showlegend = F
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/polar_dataset.csv")
+
+fig <- plot_ly(
+  df,
+  type = 'scatterpolar',
+  mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x1,
+    theta = ~y,
+    name = 'Figure8',
+    line = list(
+      color = 'peru'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x2,
+    theta = ~y,
+    name = 'Cardioid',
+    line = list(
+      color = 'darkviolet'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x3,
+    theta = ~y,
+    name = 'Hypercardioid',
+    line = list(
+      color = 'deepskyblue'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x4,
+    theta = ~y,
+    name = 'Subcardioid',
+    line = list(
+      color = 'orangered'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x5,
+    theta = ~y,
+    name = 'Supercardioid',
+    line = list(
+      color = 'green'
+    )
+  ) 
+
+fig <- fig %>%
+  layout(
+    title = 'Mic Patterns',
+    font = list(
+      family = 'Arial',
+      size = 12,
+      color = '#000'
+    ),
+    showlegend = F
+  )
+
+fig
+```
+### Area Polar Area
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 1.5, 1.5, 0, 2.5, 2.5, 0),
+    theta = c(0, 10, 25, 0, 205, 215, 0),
+    fill = 'toself',
+    fillcolor = '#709Bff',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3.5, 3.5, 0),
+    theta = c(0, 55, 75, 0),
+    fill = 'toself',
+    fillcolor = '#E4FF87',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4.5, 4.5, 0, 4.5, 4.5, 0),
+    theta = c(0, 100, 120, 0, 305, 320, 0),
+    fill = 'toself',
+    fillcolor = '#FFAA70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4, 4, 0),
+    theta = c(0, 165, 195, 0),
+    fill = 'toself',
+    fillcolor = '#FFDF70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3, 3, 0),
+    theta = c(0, 262.5, 277.5, 0),
+    fill = 'toself',
+    fillcolor = '#B6FFB4',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,5)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 1.5, 1.5, 0, 2.5, 2.5, 0),
+    theta = c(0, 10, 25, 0, 205, 215, 0),
+    fill = 'toself',
+    fillcolor = '#709Bff',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3.5, 3.5, 0),
+    theta = c(0, 55, 75, 0),
+    fill = 'toself',
+    fillcolor = '#E4FF87',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4.5, 4.5, 0, 4.5, 4.5, 0),
+    theta = c(0, 100, 120, 0, 305, 320, 0),
+    fill = 'toself',
+    fillcolor = '#FFAA70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4, 4, 0),
+    theta = c(0, 165, 195, 0),
+    fill = 'toself',
+    fillcolor = '#FFDF70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3, 3, 0),
+    theta = c(0, 262.5, 277.5, 0),
+    fill = 'toself',
+    fillcolor = '#B6FFB4',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,5)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+
+## Radar Charts
+### Basic Radar Charts
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+### Multiple Trace Radar Charts
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group A'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(1.5, 10, 39, 31, 15, 1.5),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group B'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    )
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group A'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(1.5, 10, 39, 31, 15, 1.5),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group B'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    )
+  )
+
+fig
+```
+
