@@ -1,10 +1,192 @@
 # Statistical Charts
+
 ## 2D Histograms
+
+A 2D histogram is a visualization of a bivariate distribution. And it looks like a heat map.
+
+``` r
+#
+library(plotly)
+
+s <- matrix(c(1, -.75, -.75, 1), ncol = 2)
+obs <- mvtnorm::rmvnorm(500, sigma = s)
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg)
+fig2 <- subplot(
+  fig %>% add_markers(alpha = 0.2),
+  fig %>% add_histogram2d()
+)
+
+fig2
+```
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg)
+fig2 <- subplot(
+  fig %>% add_markers(alpha = 0.5),
+  fig %>% add_histogram2d(colorscale = "Blues")
+)
+
+fig2
+
+```
 
 ## Box Plot
 
+### Basic Boxplot
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box")
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box")
+
+fig
+```
+
+### Horizontal Boxplot
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, x= ~mpg, type = "box")
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, x= ~mpg, type = "box")
+
+fig
+```
+
+### Adding Jittered Points
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box", boxpoints = "all", jitter = 0.3)
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box", boxpoints = "all", jitter = 0.3)
+
+fig
+
+```
+
+### Several Box Plots
+
+``` r
+fig <- plot_ly(data = mtcars, y= ~mpg, color = ~as.factor(cyl), type = "box")
+
+fig
+```
+
+```{r}
+fig <- plot_ly(data = mtcars, y= ~mpg, color = ~as.factor(cyl), type = "box")
+
+fig
+```
+
 ## Histograms
 
-## Error Bars
+### Basic Histograms
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, x = ~hp, type = "histogram", nbinsx = 15)
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, x = ~hp, type = "histogram", nbinsx = 15)
+
+fig
+
+```
+
+### Stacked Histogram
+
+``` r
+
+fig <- plot_ly(data = mtcars, x = ~hp,
+             type = "histogram",
+             cumulative = list(enabled=TRUE),
+             nbinsx = 15)
+
+fig
+```
+
+```{r}
+
+fig <- plot_ly(data = mtcars, x = ~hp,
+             type = "histogram",
+             cumulative = list(enabled=TRUE),
+             nbinsx = 15)
+
+fig
+```
 
 ## Violin Plots
+
+``` r
+fig <- mtcars %>%
+  plot_ly(
+    y = ~hp,
+    type = 'violin',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    x0 = 'Horse Power'
+  ) 
+
+fig <- fig %>%
+  layout(
+    yaxis = list(
+      title = "",
+      zeroline = F
+    )
+  )
+
+fig
+```
+
+```{r}
+fig <- mtcars %>%
+  plot_ly(
+    y = ~hp,
+    type = 'violin',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    x0 = 'Horse Power'
+  ) 
+
+fig <- fig %>%
+  layout(
+    yaxis = list(
+      title = "",
+      zeroline = F
+    )
+  )
+
+fig
+
+```

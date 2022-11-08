@@ -23,7 +23,9 @@
 <meta name="author" content="Taichen Zhou, Yichen Huang" />
 
 
+
 <meta name="date" content="2022-11-04" />
+
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -99,7 +101,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
+code span.bu { } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -112,7 +114,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.im { } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -194,10 +196,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3" data-path="statistical-charts.html"><a href="statistical-charts.html"><i class="fa fa-check"></i><b>3</b> Statistical Charts</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="statistical-charts.html"><a href="statistical-charts.html#d-histograms"><i class="fa fa-check"></i><b>3.1</b> 2D Histograms</a></li>
-<li class="chapter" data-level="3.2" data-path="statistical-charts.html"><a href="statistical-charts.html#box-plot"><i class="fa fa-check"></i><b>3.2</b> Box Plot</a></li>
-<li class="chapter" data-level="3.3" data-path="statistical-charts.html"><a href="statistical-charts.html#histograms"><i class="fa fa-check"></i><b>3.3</b> Histograms</a></li>
-<li class="chapter" data-level="3.4" data-path="statistical-charts.html"><a href="statistical-charts.html#error-bars"><i class="fa fa-check"></i><b>3.4</b> Error Bars</a></li>
-<li class="chapter" data-level="3.5" data-path="statistical-charts.html"><a href="statistical-charts.html#violin-plots"><i class="fa fa-check"></i><b>3.5</b> Violin Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="statistical-charts.html"><a href="statistical-charts.html#box-plot"><i class="fa fa-check"></i><b>3.2</b> Box Plot</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="statistical-charts.html"><a href="statistical-charts.html#basic-boxplot"><i class="fa fa-check"></i><b>3.2.1</b> Basic Boxplot</a></li>
+<li class="chapter" data-level="3.2.2" data-path="statistical-charts.html"><a href="statistical-charts.html#horizontal-boxplot"><i class="fa fa-check"></i><b>3.2.2</b> Horizontal Boxplot</a></li>
+<li class="chapter" data-level="3.2.3" data-path="statistical-charts.html"><a href="statistical-charts.html#adding-jittered-points"><i class="fa fa-check"></i><b>3.2.3</b> Adding Jittered Points</a></li>
+<li class="chapter" data-level="3.2.4" data-path="statistical-charts.html"><a href="statistical-charts.html#several-box-plots"><i class="fa fa-check"></i><b>3.2.4</b> Several Box Plots</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="statistical-charts.html"><a href="statistical-charts.html#histograms"><i class="fa fa-check"></i><b>3.3</b> Histograms</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="statistical-charts.html"><a href="statistical-charts.html#basic-histograms"><i class="fa fa-check"></i><b>3.3.1</b> Basic Histograms</a></li>
+<li class="chapter" data-level="3.3.2" data-path="statistical-charts.html"><a href="statistical-charts.html#stacked-histogram"><i class="fa fa-check"></i><b>3.3.2</b> Stacked Histogram</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="statistical-charts.html"><a href="statistical-charts.html#violin-plots"><i class="fa fa-check"></i><b>3.4</b> Violin Plots</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="scientific-charts.html"><a href="scientific-charts.html"><i class="fa fa-check"></i><b>4</b> Scientific Charts</a>
 <ul>
@@ -332,18 +343,110 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 3</span> Statistical Charts<a href="statistical-charts.html#statistical-charts" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="d-histograms" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> 2D Histograms<a href="statistical-charts.html#d-histograms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A 2D histogram is a visualization of a bivariate distribution. And it looks like a heat map.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="statistical-charts.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb1-2"><a href="statistical-charts.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-3"><a href="statistical-charts.html#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="statistical-charts.html#cb1-4" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span>.<span class="dv">75</span>, <span class="sc">-</span>.<span class="dv">75</span>, <span class="dv">1</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb1-5"><a href="statistical-charts.html#cb1-5" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="dv">500</span>, <span class="at">sigma =</span> s)</span>
+<span id="cb1-6"><a href="statistical-charts.html#cb1-6" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">x =</span> <span class="sc">~</span>hp, <span class="at">y=</span> <span class="sc">~</span>mpg)</span>
+<span id="cb1-7"><a href="statistical-charts.html#cb1-7" aria-hidden="true" tabindex="-1"></a>fig2 <span class="ot">&lt;-</span> <span class="fu">subplot</span>(</span>
+<span id="cb1-8"><a href="statistical-charts.html#cb1-8" aria-hidden="true" tabindex="-1"></a>  fig <span class="sc">%&gt;%</span> <span class="fu">add_markers</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>),</span>
+<span id="cb1-9"><a href="statistical-charts.html#cb1-9" aria-hidden="true" tabindex="-1"></a>  fig <span class="sc">%&gt;%</span> <span class="fu">add_histogram2d</span>()</span>
+<span id="cb1-10"><a href="statistical-charts.html#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="statistical-charts.html#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="statistical-charts.html#cb1-12" aria-hidden="true" tabindex="-1"></a>fig2</span></code></pre></div>
+<div id="htmlwidget-7cf962dbbde23dd0991b" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7cf962dbbde23dd0991b">{"x":{"data":[{"x":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"y":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"type":"scatter","mode":"markers","marker":{"color":"rgba(31,119,180,0.498)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,0.498)"},"error_x":{"color":"rgba(31,119,180,0.498)"},"line":{"color":"rgba(31,119,180,0.498)"},"xaxis":"x","yaxis":"y","frame":null},{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Blues","showscale":true,"x":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"y":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"type":"histogram2d","marker":{"line":{"color":"rgba(255,127,14,1)"}},"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"anchor":"y"},"xaxis2":{"domain":[0.52,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,1],"automargin":true,"anchor":"x2"},"yaxis":{"domain":[0,1],"automargin":true,"anchor":"x"},"annotations":[],"shapes":[],"images":[],"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"attrs":{"59385064124e":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","mode":"markers","alpha":0.5,"inherit":true},"59385064124e.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"histogram2d","colorscale":"Blues","inherit":true}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="box-plot" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Box Plot<a href="statistical-charts.html#box-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="basic-boxplot" class="section level3 hasAnchor" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Basic Boxplot<a href="statistical-charts.html#basic-boxplot" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="statistical-charts.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb2-2"><a href="statistical-charts.html#cb2-2" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">y=</span> <span class="sc">~</span>mpg, <span class="at">type =</span> <span class="st">&quot;box&quot;</span>)</span>
+<span id="cb2-3"><a href="statistical-charts.html#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="statistical-charts.html#cb2-4" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-510d529de77d58a61181" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-510d529de77d58a61181">{"x":{"visdat":{"5938105569c4":["function () ","plotlyVisDat"]},"cur_data":"5938105569c4","attrs":{"5938105569c4":{"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"mpg"},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(31,119,180,0.5)","y":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"type":"box","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="horizontal-boxplot" class="section level3 hasAnchor" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> Horizontal Boxplot<a href="statistical-charts.html#horizontal-boxplot" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="statistical-charts.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb3-2"><a href="statistical-charts.html#cb3-2" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">x=</span> <span class="sc">~</span>mpg, <span class="at">type =</span> <span class="st">&quot;box&quot;</span>)</span>
+<span id="cb3-3"><a href="statistical-charts.html#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="statistical-charts.html#cb3-4" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-87a5c0ee4a79f8b6793f" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-87a5c0ee4a79f8b6793f">{"x":{"visdat":{"5938649b4cb7":["function () ","plotlyVisDat"]},"cur_data":"5938649b4cb7","attrs":{"5938649b4cb7":{"x":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"mpg"},"yaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(31,119,180,0.5)","x":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"type":"box","orientation":"h","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="adding-jittered-points" class="section level3 hasAnchor" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Adding Jittered Points<a href="statistical-charts.html#adding-jittered-points" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="statistical-charts.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb4-2"><a href="statistical-charts.html#cb4-2" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">y=</span> <span class="sc">~</span>mpg, <span class="at">type =</span> <span class="st">&quot;box&quot;</span>, <span class="at">boxpoints =</span> <span class="st">&quot;all&quot;</span>, <span class="at">jitter =</span> <span class="fl">0.3</span>)</span>
+<span id="cb4-3"><a href="statistical-charts.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="statistical-charts.html#cb4-4" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-924fcdaf2bad603d7d9f" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-924fcdaf2bad603d7d9f">{"x":{"visdat":{"59382b402bd4":["function () ","plotlyVisDat"]},"cur_data":"59382b402bd4","attrs":{"59382b402bd4":{"y":{},"boxpoints":"all","jitter":0.3,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"mpg"},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(31,119,180,0.5)","y":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"boxpoints":"all","jitter":0.3,"type":"box","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="several-box-plots" class="section level3 hasAnchor" number="3.2.4">
+<h3><span class="header-section-number">3.2.4</span> Several Box Plots<a href="statistical-charts.html#several-box-plots" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="statistical-charts.html#cb5-1" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">y=</span> <span class="sc">~</span>mpg, <span class="at">color =</span> <span class="sc">~</span><span class="fu">as.factor</span>(cyl), <span class="at">type =</span> <span class="st">&quot;box&quot;</span>)</span>
+<span id="cb5-2"><a href="statistical-charts.html#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="statistical-charts.html#cb5-3" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-2655bd0dbbee1e6de377" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2655bd0dbbee1e6de377">{"x":{"visdat":{"593879966705":["function () ","plotlyVisDat"]},"cur_data":"593879966705","attrs":{"593879966705":{"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"mpg"},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(102,194,165,0.5)","y":[22.8,24.4,22.8,32.4,30.4,33.9,21.5,27.3,26,30.4,21.4],"type":"box","name":"4","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(252,141,98,0.5)","y":[21,21,21.4,18.1,19.2,17.8,19.7],"type":"box","name":"6","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(141,160,203,0.5)","y":[18.7,14.3,16.4,17.3,15.2,10.4,10.4,14.7,15.5,15.2,13.3,19.2,15.8,15],"type":"box","name":"8","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
 </div>
 <div id="histograms" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Histograms<a href="statistical-charts.html#histograms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="basic-histograms" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Basic Histograms<a href="statistical-charts.html#basic-histograms" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="statistical-charts.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb6-2"><a href="statistical-charts.html#cb6-2" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">x =</span> <span class="sc">~</span>hp, <span class="at">type =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">nbinsx =</span> <span class="dv">15</span>)</span>
+<span id="cb6-3"><a href="statistical-charts.html#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="statistical-charts.html#cb6-4" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-7a55138841df550ee8dd" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7a55138841df550ee8dd">{"x":{"visdat":{"593836ca7496":["function () ","plotlyVisDat"]},"cur_data":"593836ca7496","attrs":{"593836ca7496":{"x":{},"nbinsx":15,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"histogram"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"hp"},"yaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"nbinsx":15,"type":"histogram","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="error-bars" class="section level2 hasAnchor" number="3.4">
-<h2><span class="header-section-number">3.4</span> Error Bars<a href="statistical-charts.html#error-bars" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="stacked-histogram" class="section level3 hasAnchor" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Stacked Histogram<a href="statistical-charts.html#stacked-histogram" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="statistical-charts.html#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="statistical-charts.html#cb7-2" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(<span class="at">data =</span> mtcars, <span class="at">x =</span> <span class="sc">~</span>hp,</span>
+<span id="cb7-3"><a href="statistical-charts.html#cb7-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">type =</span> <span class="st">&quot;histogram&quot;</span>,</span>
+<span id="cb7-4"><a href="statistical-charts.html#cb7-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">cumulative =</span> <span class="fu">list</span>(<span class="at">enabled=</span><span class="cn">TRUE</span>),</span>
+<span id="cb7-5"><a href="statistical-charts.html#cb7-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">nbinsx =</span> <span class="dv">15</span>)</span>
+<span id="cb7-6"><a href="statistical-charts.html#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="statistical-charts.html#cb7-7" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-3880cdc4109f159e6223" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3880cdc4109f159e6223">{"x":{"visdat":{"593844bc397":["function () ","plotlyVisDat"]},"cur_data":"593844bc397","attrs":{"593844bc397":{"x":{},"cumulative":{"enabled":true},"nbinsx":15,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"histogram"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"hp"},"yaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"cumulative":{"enabled":true},"nbinsx":15,"type":"histogram","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="violin-plots" class="section level2 hasAnchor" number="3.5">
-<h2><span class="header-section-number">3.5</span> Violin Plots<a href="statistical-charts.html#violin-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="violin-plots" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Violin Plots<a href="statistical-charts.html#violin-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="statistical-charts.html#cb8-1" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="statistical-charts.html#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_ly</span>(</span>
+<span id="cb8-3"><a href="statistical-charts.html#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="sc">~</span>hp,</span>
+<span id="cb8-4"><a href="statistical-charts.html#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">&#39;violin&#39;</span>,</span>
+<span id="cb8-5"><a href="statistical-charts.html#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">box =</span> <span class="fu">list</span>(</span>
+<span id="cb8-6"><a href="statistical-charts.html#cb8-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">visible =</span> T</span>
+<span id="cb8-7"><a href="statistical-charts.html#cb8-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-8"><a href="statistical-charts.html#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">meanline =</span> <span class="fu">list</span>(</span>
+<span id="cb8-9"><a href="statistical-charts.html#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">visible =</span> T</span>
+<span id="cb8-10"><a href="statistical-charts.html#cb8-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-11"><a href="statistical-charts.html#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x0 =</span> <span class="st">&#39;Horse Power&#39;</span></span>
+<span id="cb8-12"><a href="statistical-charts.html#cb8-12" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb8-13"><a href="statistical-charts.html#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="statistical-charts.html#cb8-14" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> fig <span class="sc">%&gt;%</span></span>
+<span id="cb8-15"><a href="statistical-charts.html#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(</span>
+<span id="cb8-16"><a href="statistical-charts.html#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">yaxis =</span> <span class="fu">list</span>(</span>
+<span id="cb8-17"><a href="statistical-charts.html#cb8-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb8-18"><a href="statistical-charts.html#cb8-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">zeroline =</span> F</span>
+<span id="cb8-19"><a href="statistical-charts.html#cb8-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-20"><a href="statistical-charts.html#cb8-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-21"><a href="statistical-charts.html#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="statistical-charts.html#cb8-22" aria-hidden="true" tabindex="-1"></a>fig</span></code></pre></div>
+<div id="htmlwidget-ae6671bcce6d4bb99cdc" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ae6671bcce6d4bb99cdc">{"x":{"visdat":{"59382b0e1d81":["function () ","plotlyVisDat"]},"cur_data":"59382b0e1d81","attrs":{"59382b0e1d81":{"y":{},"box":{"visible":true},"meanline":{"visible":true},"x0":"Horse Power","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"violin"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"","zeroline":false},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(31,119,180,0.5)","y":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"box":{"visible":true},"meanline":{"visible":true},"x0":"Horse Power","type":"violin","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 
 </div>
 </div>
