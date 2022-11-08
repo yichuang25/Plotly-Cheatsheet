@@ -1,1 +1,1157 @@
 # Artificial Intelligence and Machine Learning
+## ML Regression in R
+### Linear Regression with R
+```r
+library(reshape2)
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+data(tips)
+
+y <- tips$tip
+X <- tips$total_bill
+
+set.seed(123)
+tips_split <- initial_split(tips)
+tips_training <- tips_split %>% 
+  training()
+tips_test <- tips_split %>% 
+  testing()
+
+lm_model <- linear_reg() %>% 
+  set_engine('lm') %>% 
+  set_mode('regression') %>%
+  fit(tip ~ total_bill, data = tips_training) 
+
+x_range <- seq(min(X), max(X), length.out = 100)
+x_range <- matrix(x_range, nrow=100, ncol=1)
+xdf <- data.frame(x_range)
+colnames(xdf) <- c('total_bill')
+
+ydf <- lm_model %>%
+  predict(xdf) 
+
+colnames(ydf) <- c('tip')
+xy <- data.frame(xdf, ydf) 
+
+fig <- plot_ly(data = tips_training, x = ~total_bill, y = ~tip, type = 'scatter', name = 'train', mode = 'markers', alpha = 0.65) %>% 
+  add_trace(data = tips_test, x = ~total_bill, y = ~tip, type = 'scatter', name = 'test', mode = 'markers', alpha = 0.65 ) %>% 
+  add_trace(data = xy, x = ~total_bill, y = ~tip, name = 'prediction', mode = 'lines', alpha = 1)
+fig
+
+```
+```{r}
+library(reshape2)
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+data(tips)
+
+y <- tips$tip
+X <- tips$total_bill
+
+set.seed(123)
+tips_split <- initial_split(tips)
+tips_training <- tips_split %>% 
+  training()
+tips_test <- tips_split %>% 
+  testing()
+
+lm_model <- linear_reg() %>% 
+  set_engine('lm') %>% 
+  set_mode('regression') %>%
+  fit(tip ~ total_bill, data = tips_training) 
+
+x_range <- seq(min(X), max(X), length.out = 100)
+x_range <- matrix(x_range, nrow=100, ncol=1)
+xdf <- data.frame(x_range)
+colnames(xdf) <- c('total_bill')
+
+ydf <- lm_model %>%
+  predict(xdf) 
+
+colnames(ydf) <- c('tip')
+xy <- data.frame(xdf, ydf) 
+
+fig <- plot_ly(data = tips_training, x = ~total_bill, y = ~tip, type = 'scatter', name = 'train', mode = 'markers', alpha = 0.65) %>% 
+  add_trace(data = tips_test, x = ~total_bill, y = ~tip, type = 'scatter', name = 'test', mode = 'markers', alpha = 0.65 ) %>% 
+  add_trace(data = xy, x = ~total_bill, y = ~tip, name = 'prediction', mode = 'lines', alpha = 1)
+fig
+
+```
+
+## ROC and PR Curves
+### ROC and PR Curves
+```r
+library(plotly)
+library(tidymodels)
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+data <- data.frame(X,y)
+data$y <- as.factor(data$y)
+X <- subset(data,select = -c(y))
+logistic_glm <-
+  logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  fit(y ~ ., data = data)
+
+y_scores <- logistic_glm %>%
+  predict(X, type = 'prob')
+
+y_score <- y_scores$.pred_1
+db <- data.frame(data$y, y_score)
+
+z <- roc_curve(data = db, 'data.y', 'y_score')
+z$specificity <- 1 - z$specificity
+colnames(z) <- c('threshold', 'tpr', 'fpr')
+
+fig1 <- plot_ly(x= y_score, color = data$y, colors = c('blue', 'red'), type = 'histogram', alpha = 0.5, nbinsx = 50) %>%
+  layout(barmode = "overlay")
+fig1
+```
+```{r}
+library(plotly)
+library(tidymodels)
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+data <- data.frame(X,y)
+data$y <- as.factor(data$y)
+X <- subset(data,select = -c(y))
+logistic_glm <-
+  logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  fit(y ~ ., data = data)
+
+y_scores <- logistic_glm %>%
+  predict(X, type = 'prob')
+
+y_score <- y_scores$.pred_1
+db <- data.frame(data$y, y_score)
+
+z <- roc_curve(data = db, 'data.y', 'y_score')
+z$specificity <- 1 - z$specificity
+colnames(z) <- c('threshold', 'tpr', 'fpr')
+
+fig1 <- plot_ly(x= y_score, color = data$y, colors = c('blue', 'red'), type = 'histogram', alpha = 0.5, nbinsx = 50) %>%
+  layout(barmode = "overlay")
+fig1
+```
+```r
+fig2 <- plot_ly(data = z, x = ~threshold) %>%
+  add_trace(y = ~fpr, mode = 'lines', name = 'False Positive Rate', type = 'scatter')%>%
+  add_trace(y = ~tpr, mode = 'lines', name = 'True Positive Rate', type = 'scatter')%>%
+  layout(title = 'TPR and FPR at every threshold')
+fig2 <- fig2 %>% layout(legend=list(title=list(text='<b> Rate </b>')))
+fig2
+```
+```{r}
+fig2 <- plot_ly(data = z, x = ~threshold) %>%
+  add_trace(y = ~fpr, mode = 'lines', name = 'False Positive Rate', type = 'scatter')%>%
+  add_trace(y = ~tpr, mode = 'lines', name = 'True Positive Rate', type = 'scatter')%>%
+  layout(title = 'TPR and FPR at every threshold')
+fig2 <- fig2 %>% layout(legend=list(title=list(text='<b> Rate </b>')))
+fig2
+```
+
+### Basic binary ROC curve
+```r
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(pROC)
+
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+db <- data.frame(X,y)
+db$y <- as.factor(db$y)
+test_data = db[1:20]
+
+model<- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  # Fit the model
+  fit(y ~., data = db)
+
+
+ypred <- predict(model,
+                  new_data = test_data,
+                  type = "prob")
+
+yscore <- data.frame(ypred$.pred_0)
+rdb <- cbind(db$y,yscore)
+colnames(rdb) = c('y','yscore')
+
+
+pdb <- roc_curve(rdb, y, yscore)
+pdb$specificity <- 1 - pdb$specificity
+auc = roc_auc(rdb, y, yscore)
+auc = auc$.estimate
+
+tit = paste('ROC Curve (AUC = ',toString(round(auc,2)),')',sep = '')
+
+
+fig <-  plot_ly(data = pdb ,x =  ~specificity, y = ~sensitivity, type = 'scatter', mode = 'lines', fill = 'tozeroy') %>%
+  layout(title = tit,xaxis = list(title = "False Positive Rate"), yaxis = list(title = "True Positive Rate")) %>%
+add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'),inherit = FALSE, showlegend = FALSE)
+fig
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(pROC)
+
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+db <- data.frame(X,y)
+db$y <- as.factor(db$y)
+test_data = db[1:20]
+
+model<- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  # Fit the model
+  fit(y ~., data = db)
+
+
+ypred <- predict(model,
+                  new_data = test_data,
+                  type = "prob")
+
+yscore <- data.frame(ypred$.pred_0)
+rdb <- cbind(db$y,yscore)
+colnames(rdb) = c('y','yscore')
+
+
+pdb <- roc_curve(rdb, y, yscore)
+pdb$specificity <- 1 - pdb$specificity
+auc = roc_auc(rdb, y, yscore)
+auc = auc$.estimate
+
+tit = paste('ROC Curve (AUC = ',toString(round(auc,2)),')',sep = '')
+
+
+fig <-  plot_ly(data = pdb ,x =  ~specificity, y = ~sensitivity, type = 'scatter', mode = 'lines', fill = 'tozeroy') %>%
+  layout(title = tit,xaxis = list(title = "False Positive Rate"), yaxis = list(title = "True Positive Rate")) %>%
+add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'),inherit = FALSE, showlegend = FALSE)
+fig
+
+```
+### Multiclass ROC Curve
+```r
+library(plotly)
+library(tidymodels)
+library(fastDummies)
+
+# Artificially add noise to make task harder
+data(iris)
+ind <- sample.int(150, 50)
+samples <- sample(x = iris$Species, size = 50)
+iris[ind,'Species'] = samples
+
+# Define the inputs and outputs
+X <- subset(iris, select = -c(Species))
+iris$Species <- as.factor(iris$Species)
+
+# Fit the model
+logistic <-
+  multinom_reg() %>%
+  set_engine("nnet") %>%
+  set_mode("classification") %>%
+  fit(Species ~ ., data = iris)
+
+y_scores <- logistic %>%
+  predict(X, type = 'prob')
+
+# One hot encode the labels in order to plot them
+y_onehot <- dummy_cols(iris$Species)
+colnames(y_onehot) <- c('drop', 'setosa', 'versicolor', 'virginica')
+y_onehot <- subset(y_onehot, select = -c(drop))
+
+z = cbind(y_scores, y_onehot)
+
+z$setosa <- as.factor(z$setosa)
+roc_setosa <- roc_curve(data = z, setosa, .pred_setosa)
+roc_setosa$specificity <- 1 - roc_setosa$specificity
+colnames(roc_setosa) <- c('threshold', 'tpr', 'fpr')
+auc_setosa <- roc_auc(data = z, setosa, .pred_setosa)
+auc_setosa <- auc_setosa$.estimate
+setosa <- paste('setosa (AUC=',toString(round(1-auc_setosa,2)),')',sep = '')
+
+z$versicolor <- as.factor(z$versicolor)
+roc_versicolor <- roc_curve(data = z, versicolor, .pred_versicolor)
+roc_versicolor$specificity <- 1 - roc_versicolor$specificity
+colnames(roc_versicolor) <- c('threshold', 'tpr', 'fpr')
+auc_versicolor <- roc_auc(data = z, versicolor, .pred_versicolor)
+auc_versicolor <- auc_versicolor$.estimate
+versicolor <- paste('versicolor (AUC=',toString(round(1-auc_versicolor,2)),')', sep = '')
+
+z$virginica <- as.factor(z$virginica)
+roc_virginica <- roc_curve(data = z, virginica, .pred_virginica)
+roc_virginica$specificity <- 1 - roc_virginica$specificity
+colnames(roc_virginica) <- c('threshold', 'tpr', 'fpr')
+auc_virginica <- roc_auc(data = z, virginica, .pred_virginica)
+auc_virginica <- auc_virginica$.estimate
+virginica <- paste('virginica (AUC=',toString(round(1-auc_virginica,2)),')',sep = '')
+
+# Create an empty figure, and iteratively add a line for each class
+fig <- plot_ly()%>%
+  add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'), showlegend = FALSE) %>%
+  add_trace(data = roc_setosa,x = ~fpr, y = ~tpr, mode = 'lines', name = setosa, type = 'scatter')%>%
+  add_trace(data = roc_versicolor,x = ~fpr, y = ~tpr, mode = 'lines', name = versicolor, type = 'scatter')%>%
+  add_trace(data = roc_virginica,x = ~fpr, y = ~tpr, mode = 'lines', name = virginica, type = 'scatter')%>%
+  layout(xaxis = list(
+    title = "False Positive Rate"
+  ), yaxis = list(
+    title = "True Positive Rate"
+  ),legend = list(x = 100, y = 0.5))
+fig
+
+```
+```{r}
+library(plotly)
+library(tidymodels)
+library(fastDummies)
+
+# Artificially add noise to make task harder
+data(iris)
+ind <- sample.int(150, 50)
+samples <- sample(x = iris$Species, size = 50)
+iris[ind,'Species'] = samples
+
+# Define the inputs and outputs
+X <- subset(iris, select = -c(Species))
+iris$Species <- as.factor(iris$Species)
+
+# Fit the model
+logistic <-
+  multinom_reg() %>%
+  set_engine("nnet") %>%
+  set_mode("classification") %>%
+  fit(Species ~ ., data = iris)
+
+y_scores <- logistic %>%
+  predict(X, type = 'prob')
+
+# One hot encode the labels in order to plot them
+y_onehot <- dummy_cols(iris$Species)
+colnames(y_onehot) <- c('drop', 'setosa', 'versicolor', 'virginica')
+y_onehot <- subset(y_onehot, select = -c(drop))
+
+z = cbind(y_scores, y_onehot)
+
+z$setosa <- as.factor(z$setosa)
+roc_setosa <- roc_curve(data = z, setosa, .pred_setosa)
+roc_setosa$specificity <- 1 - roc_setosa$specificity
+colnames(roc_setosa) <- c('threshold', 'tpr', 'fpr')
+auc_setosa <- roc_auc(data = z, setosa, .pred_setosa)
+auc_setosa <- auc_setosa$.estimate
+setosa <- paste('setosa (AUC=',toString(round(1-auc_setosa,2)),')',sep = '')
+
+z$versicolor <- as.factor(z$versicolor)
+roc_versicolor <- roc_curve(data = z, versicolor, .pred_versicolor)
+roc_versicolor$specificity <- 1 - roc_versicolor$specificity
+colnames(roc_versicolor) <- c('threshold', 'tpr', 'fpr')
+auc_versicolor <- roc_auc(data = z, versicolor, .pred_versicolor)
+auc_versicolor <- auc_versicolor$.estimate
+versicolor <- paste('versicolor (AUC=',toString(round(1-auc_versicolor,2)),')', sep = '')
+
+z$virginica <- as.factor(z$virginica)
+roc_virginica <- roc_curve(data = z, virginica, .pred_virginica)
+roc_virginica$specificity <- 1 - roc_virginica$specificity
+colnames(roc_virginica) <- c('threshold', 'tpr', 'fpr')
+auc_virginica <- roc_auc(data = z, virginica, .pred_virginica)
+auc_virginica <- auc_virginica$.estimate
+virginica <- paste('virginica (AUC=',toString(round(1-auc_virginica,2)),')',sep = '')
+
+# Create an empty figure, and iteratively add a line for each class
+fig <- plot_ly()%>%
+  add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'), showlegend = FALSE) %>%
+  add_trace(data = roc_setosa,x = ~fpr, y = ~tpr, mode = 'lines', name = setosa, type = 'scatter')%>%
+  add_trace(data = roc_versicolor,x = ~fpr, y = ~tpr, mode = 'lines', name = versicolor, type = 'scatter')%>%
+  add_trace(data = roc_virginica,x = ~fpr, y = ~tpr, mode = 'lines', name = virginica, type = 'scatter')%>%
+  layout(xaxis = list(
+    title = "False Positive Rate"
+  ), yaxis = list(
+    title = "True Positive Rate"
+  ),legend = list(x = 100, y = 0.5))
+fig
+
+```
+
+## PCA Visulization
+### Visualize all the original dimensions
+```r
+library(plotly)
+
+data(iris)
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+
+fig <- iris %>%
+  plot_ly()
+fig <- fig %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='sepal length', values=~Sepal.Length),
+      list(label='sepal width', values=~Sepal.Width),
+      list(label='petal length', values=~Petal.Length),
+      list(label='petal width', values=~Petal.Width)
+    ),
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') ,
+    marker = list(
+      size = 7,
+      line = list(
+        width = 1,
+        color = 'rgb(230,230,230)'
+      )
+    )
+  )
+fig <-  fig %>% style(diagonal = list(visible = FALSE))
+fig <- fig %>%
+  layout(
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+
+data(iris)
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+
+fig <- iris %>%
+  plot_ly()
+fig <- fig %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='sepal length', values=~Sepal.Length),
+      list(label='sepal width', values=~Sepal.Width),
+      list(label='petal length', values=~Petal.Length),
+      list(label='petal width', values=~Petal.Width)
+    ),
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') ,
+    marker = list(
+      size = 7,
+      line = list(
+        width = 1,
+        color = 'rgb(230,230,230)'
+      )
+    )
+  )
+fig <-  fig %>% style(diagonal = list(visible = FALSE))
+fig <- fig %>%
+  layout(
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+
+### Visualize all the principal components
+```r
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X)
+explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+explained_variance_ratio <- 100 * explained_variance_ratio
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC3 <- -components$PC3
+components$PC2 <- -components$PC2
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+fig <- components %>%
+  plot_ly()  %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label=paste('PC 1 (',toString(round(explained_variance_ratio[1],1)),'%)',sep = ''), values=~PC1),
+      list(label=paste('PC 2 (',toString(round(explained_variance_ratio[2],1)),'%)',sep = ''), values=~PC2),
+      list(label=paste('PC 3 (',toString(round(explained_variance_ratio[3],1)),'%)',sep = ''), values=~PC3),
+      list(label=paste('PC 4 (',toString(round(explained_variance_ratio[4],1)),'%)',sep = ''), values=~PC4)
+    ),
+    color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')
+  ) %>%
+  style(diagonal = list(visible = FALSE)) %>%
+  layout(
+    legend=list(title=list(text='color')),
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X)
+explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+explained_variance_ratio <- 100 * explained_variance_ratio
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC3 <- -components$PC3
+components$PC2 <- -components$PC2
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+fig <- components %>%
+  plot_ly()  %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label=paste('PC 1 (',toString(round(explained_variance_ratio[1],1)),'%)',sep = ''), values=~PC1),
+      list(label=paste('PC 2 (',toString(round(explained_variance_ratio[2],1)),'%)',sep = ''), values=~PC2),
+      list(label=paste('PC 3 (',toString(round(explained_variance_ratio[3],1)),'%)',sep = ''), values=~PC3),
+      list(label=paste('PC 4 (',toString(round(explained_variance_ratio[4],1)),'%)',sep = ''), values=~PC4)
+    ),
+    color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')
+  ) %>%
+  style(diagonal = list(visible = FALSE)) %>%
+  layout(
+    legend=list(title=list(text='color')),
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+### Visualize a subset of the principal components
+```r
+library(plotly)
+library(stats)
+library(MASS)
+
+db = Boston
+
+prin_comp <- prcomp(db, rank. = 4)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, db$medv)
+components$PC2 <- -components$PC2
+colnames(components)[5] = 'Median_Price'
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.56'
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4)
+
+fig <- components %>%
+  plot_ly() %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='PC1', values=~PC1),
+      list(label='PC2', values=~PC2),
+      list(label='PC3', values=~PC3),
+      list(label='PC4', values=~PC4)
+    ),
+    color=~Median_Price,
+    marker = list(
+      size = 7
+    )
+  ) %>% style(diagonal = list(visible = F)) %>%
+  layout(
+    title= tit,
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+options(warn=-1)
+fig
+
+```
+```{r}
+library(plotly)
+library(stats)
+library(MASS)
+
+db = Boston
+
+prin_comp <- prcomp(db, rank. = 4)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, db$medv)
+components$PC2 <- -components$PC2
+colnames(components)[5] = 'Median_Price'
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.56'
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4)
+
+fig <- components %>%
+  plot_ly() %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='PC1', values=~PC1),
+      list(label='PC2', values=~PC2),
+      list(label='PC3', values=~PC3),
+      list(label='PC4', values=~PC4)
+    ),
+    color=~Median_Price,
+    marker = list(
+      size = 7
+    )
+  ) %>% style(diagonal = list(visible = F)) %>%
+  layout(
+    title= tit,
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+options(warn=-1)
+fig
+
+```
+### Visualize PCA with scatter3d
+```r
+data("iris")
+
+X <- subset(iris, select = -c(Species))
+
+prin_comp <- prcomp(X, rank. = 3)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components$PC2 <- -components$PC2
+components$PC3 <- -components$PC3
+components = cbind(components, iris$Species)
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.48'
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, z = ~PC3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>%
+  add_markers(size = 12)
+
+
+fig <- fig %>%
+  layout(
+    title = tit,
+    scene = list(bgcolor = "#e5ecf6")
+)
+
+fig
+
+```
+```{r}
+data("iris")
+
+X <- subset(iris, select = -c(Species))
+
+prin_comp <- prcomp(X, rank. = 3)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components$PC2 <- -components$PC2
+components$PC3 <- -components$PC3
+components = cbind(components, iris$Species)
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.48'
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, z = ~PC3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>%
+  add_markers(size = 12)
+
+
+fig <- fig %>%
+  layout(
+    title = tit,
+    scene = list(bgcolor = "#e5ecf6")
+)
+
+fig
+
+```
+### Visualize Loadings
+```r
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X, rank = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC2 <- -components$PC2
+explained_variance <- summary(prin_comp)[["sdev"]]
+explained_variance <- explained_variance[1:2]
+comp <- prin_comp[["rotation"]]
+comp[,'PC2'] <- - comp[,'PC2']
+loadings <- comp
+for (i in seq(explained_variance)){
+  loadings[,i] <- comp[,i] * explained_variance[i]
+}
+
+features = c('sepal_length', 'sepal_width', 'petal_length', 'petal_width')
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers') %>%
+  layout(
+    legend=list(title=list(text='color')),
+    plot_bgcolor = "#e5ecf6",
+    xaxis = list(
+      title = "0"),
+    yaxis = list(
+      title = "1"))
+for (i in seq(4)){
+  fig <- fig %>%
+    add_segments(x = 0, xend = loadings[i, 1], y = 0, yend = loadings[i, 2], line = list(color = 'black'),inherit = FALSE, showlegend = FALSE) %>%
+    add_annotations(x=loadings[i, 1], y=loadings[i, 2], ax = 0, ay = 0,text = features[i], xanchor = 'center', yanchor= 'bottom')
+}
+
+fig
+
+```
+
+```{r}
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X, rank = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC2 <- -components$PC2
+explained_variance <- summary(prin_comp)[["sdev"]]
+explained_variance <- explained_variance[1:2]
+comp <- prin_comp[["rotation"]]
+comp[,'PC2'] <- - comp[,'PC2']
+loadings <- comp
+for (i in seq(explained_variance)){
+  loadings[,i] <- comp[,i] * explained_variance[i]
+}
+
+features = c('sepal_length', 'sepal_width', 'petal_length', 'petal_width')
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers') %>%
+  layout(
+    legend=list(title=list(text='color')),
+    plot_bgcolor = "#e5ecf6",
+    xaxis = list(
+      title = "0"),
+    yaxis = list(
+      title = "1"))
+for (i in seq(4)){
+  fig <- fig %>%
+    add_segments(x = 0, xend = loadings[i, 1], y = 0, yend = loadings[i, 2], line = list(color = 'black'),inherit = FALSE, showlegend = FALSE) %>%
+    add_annotations(x=loadings[i, 1], y=loadings[i, 2], ax = 0, ay = 0,text = features[i], xanchor = 'center', yanchor= 'bottom')
+}
+
+fig
+
+```
+## t-SNE and UMAP projections
+### Basic t-SNE projections
+```r
+library(plotly) 
+library(stats) 
+data(iris) 
+X <- subset(iris, select = -c(Species)) 
+axis = list(showline=FALSE, 
+            zeroline=FALSE, 
+            gridcolor='#ffff', 
+            ticklen=4)
+fig <- iris %>%  
+  plot_ly()  %>%  
+  add_trace(  
+    type = 'splom',  
+    dimensions = list( 
+      list(label = 'sepal_width',values=~Sepal.Width),  
+      list(label = 'sepal_length',values=~Sepal.Length),  
+      list(label ='petal_width',values=~Petal.Width),  
+      list(label = 'petal_length',values=~Petal.Length)),  
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') 
+  ) 
+fig <- fig %>% 
+  layout( 
+    legend=list(title=list(text='species')), 
+    hovermode='closest', 
+    dragmode= 'select', 
+    plot_bgcolor='rgba(240,240,240,0.95)', 
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    xaxis2=axis, 
+    xaxis3=axis, 
+    xaxis4=axis, 
+    yaxis2=axis, 
+    yaxis3=axis, 
+    yaxis4=axis 
+  ) 
+fig
+
+```
+```{r}
+library(plotly) 
+library(stats) 
+data(iris) 
+X <- subset(iris, select = -c(Species)) 
+axis = list(showline=FALSE, 
+            zeroline=FALSE, 
+            gridcolor='#ffff', 
+            ticklen=4)
+fig <- iris %>%  
+  plot_ly()  %>%  
+  add_trace(  
+    type = 'splom',  
+    dimensions = list( 
+      list(label = 'sepal_width',values=~Sepal.Width),  
+      list(label = 'sepal_length',values=~Sepal.Length),  
+      list(label ='petal_width',values=~Petal.Width),  
+      list(label = 'petal_length',values=~Petal.Length)),  
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') 
+  ) 
+fig <- fig %>% 
+  layout( 
+    legend=list(title=list(text='species')), 
+    hovermode='closest', 
+    dragmode= 'select', 
+    plot_bgcolor='rgba(240,240,240,0.95)', 
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    xaxis2=axis, 
+    xaxis3=axis, 
+    xaxis4=axis, 
+    yaxis2=axis, 
+    yaxis3=axis, 
+    yaxis4=axis 
+  ) 
+fig
+
+```
+### Project data into 2D with t-SNE
+```r
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+set.seed(0)
+tsne <- tsne(features, initial_dims = 2)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, type = 'scatter', mode = 'markers', split = ~iris$Species)
+
+fig <- fig %>%
+  layout(
+    plot_bgcolor = "#e5ecf6"
+  )
+
+fig
+
+```
+```{r}
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+set.seed(0)
+tsne <- tsne(features, initial_dims = 2)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, type = 'scatter', mode = 'markers', split = ~iris$Species)
+
+fig <- fig %>%
+  layout(
+    plot_bgcolor = "#e5ecf6"
+  )
+
+fig
+
+
+```
+### Project data into 3D with t-SNE
+```r
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+#set.seed(0)
+tsne <- tsne(features, initial_dims = 3, k =3)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>% 
+  add_markers(size = 8) %>%
+  layout( 
+    xaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'), 
+    yaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'),
+    scene =list(bgcolor = "#e5ecf6"))
+fig
+
+```
+```{r}
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+#set.seed(0)
+tsne <- tsne(features, initial_dims = 3, k =3)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>% 
+  add_markers(size = 8) %>%
+  layout( 
+    xaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'), 
+    yaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'),
+    scene =list(bgcolor = "#e5ecf6"))
+fig
+
+```
+### Projections with UMAP
+```r
+library(plotly) 
+library(umap) 
+iris.data = iris[, grep("Sepal|Petal", colnames(iris))] 
+iris.labels = iris[, "Species"] 
+iris.umap = umap(iris.data, n_components = 2, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers')%>%  
+  layout(
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='species')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+
+iris.umap = umap(iris.data, n_components = 3, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig2 <- plot_ly(final, x = ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')) 
+fig2 <- fig2 %>% add_markers() 
+fig2 <- fig2 %>% layout(scene = list(xaxis = list(title = '0'), 
+                                     yaxis = list(title = '1'), 
+                                     zaxis = list(title = '2'))) 
+
+fig 
+
+```
+```{r}
+library(plotly) 
+library(umap) 
+iris.data = iris[, grep("Sepal|Petal", colnames(iris))] 
+iris.labels = iris[, "Species"] 
+iris.umap = umap(iris.data, n_components = 2, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers')%>%  
+  layout(
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='species')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+
+iris.umap = umap(iris.data, n_components = 3, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig2 <- plot_ly(final, x = ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')) 
+fig2 <- fig2 %>% add_markers() 
+fig2 <- fig2 %>% layout(scene = list(xaxis = list(title = '0'), 
+                                     yaxis = list(title = '1'), 
+                                     zaxis = list(title = '2'))) 
+
+fig 
+
+```
+```r
+fig2
+```
+```{r}
+fig2
+```
+### Visualizing image datasets
+```r
+library(rsvd) 
+library(plotly) 
+library(umap) 
+data('digits') 
+digits.data = digits[, grep("pixel", colnames(digits))] 
+digits.labels = digits[, "label"] 
+digits.umap = umap(digits.data, n_components = 2, k = 10) 
+layout <- digits.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, digits[,'label']) 
+colnames(final) <- c('X1', 'X2', 'label') 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, split = ~label,  type = 'scatter', mode = 'markers')%>%  
+  layout(  
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='digit')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+fig
+
+```
+```{r}
+library(rsvd) 
+library(plotly) 
+library(umap) 
+data('digits') 
+digits.data = digits[, grep("pixel", colnames(digits))] 
+digits.labels = digits[, "label"] 
+digits.umap = umap(digits.data, n_components = 2, k = 10) 
+layout <- digits.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, digits[,'label']) 
+colnames(final) <- c('X1', 'X2', 'label') 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, split = ~label,  type = 'scatter', mode = 'markers')%>%  
+  layout(  
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='digit')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+fig
+
+```
+
