@@ -1,0 +1,4974 @@
+--- 
+title: "Plotly Cheatsheet"
+author: "Taichen Zhou, Yichen Huang"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output:
+  rmdformats::downcute: 
+    self_contained: true
+    thumbnails: false
+    df_print: paged
+    lightbox: true
+    gallery: true
+    embed_fonts: true
+    default_style: "dark"
+    toc_depth: 4
+    highlight: tango
+    code_folding: "show"
+    code_download: true
+---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+```{css echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+code{
+  font-family: 'Fira Code'!important;
+}
+```
+
+# Introduction
+
+## Getting Start
+**plotly** is an R package for creating interactive web-based graphs via the open source JavaScript graphing library plotly.js.
+As of version 2.0 (November 17, 2015), graphs created with the plotly R package are rendered locally through the htmlwidgets framework.
+
+## Installation
+### CRAN
+Use the install.package() function to install the plotly R package from CRAN. This version may not be the absolute latest version, so we recommend downloading from Github using the instructions below if you can.
+```
+install.packages('plotly')
+```
+### GitHub
+Alternatively, you can install the latest development version of plotly from GitHub via the devtools R package:
+```
+devtools::install_github("ropensci/plotly")
+```
+
+<!--chapter:end:index.Rmd-->
+
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Basic Charts
+## Scatter Plots
+### Basic Scatter Plot
+
+```r
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter", mode = "markers")
+fig
+```
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter", mode = "markers")
+fig
+```
+### Styled Scatter Plots
+
+```r
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter",
+               mode = "markers"，
+               marker = list(size = 10,
+                             color = 'rgba(255, 182, 193, .9)',
+                             line = list(color = 'rgba(152, 0, 0, .8)',
+                                         width = 2)))
+fig <- fig %>% layout(title = 'Styled Scatter',
+         yaxis = list(zeroline = FALSE),
+         xaxis = list(zeroline = FALSE))
+
+fig
+```
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg, type = "scatter",
+               marker = list(size = 10,
+                             color = 'rgba(255, 182, 193, .9)',
+                             line = list(color = 'rgba(152, 0, 0, .8)',
+                                         width = 2)))
+fig <- fig %>% layout(title = 'Styled Scatter',
+         yaxis = list(zeroline = FALSE),
+         xaxis = list(zeroline = FALSE))
+
+fig
+```
+### Qualitative Colorscales
+```r
+library(plotly)
+fig <- plot_ly(data = mtcars, x = ~hp, y = ~mpg, color = ~cyl)
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, x = ~hp, y = ~mpg, color = ~cyl)
+fig
+
+```
+## Line Plots
+### Basic Line Plot
+```r
+library(plotly)
+
+x <- c(1:100)
+random_y <- rnorm(100, mean = 0)
+data <- data.frame(x, random_y)
+
+fig <- plot_ly(data, x = ~x, y = ~random_y, type = 'scatter', mode = 'lines')
+
+fig
+```
+```{r}
+library(plotly)
+
+x <- c(1:100)
+random_y <- rnorm(100, mean = 0)
+data <- data.frame(x, random_y)
+
+fig <- plot_ly(data, x = ~x, y = ~random_y, type = 'scatter', mode = 'lines')
+
+fig
+```
+### Line Plots Mode
+```r
+library(plotly)
+
+trace_0 <- rnorm(100, mean = 5)
+trace_1 <- rnorm(100, mean = 0)
+trace_2 <- rnorm(100, mean = -5)
+x <- c(1:100)
+
+data <- data.frame(x, trace_0, trace_1, trace_2)
+
+fig <- plot_ly(data, x = ~x, y = ~trace_0, name = 'trace 0', type = 'scatter', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~trace_1, name = 'trace 1', mode = 'lines+markers') 
+fig <- fig %>% add_trace(y = ~trace_2, name = 'trace 2', mode = 'markers')
+
+fig
+
+```
+```{r}
+library(plotly)
+
+trace_0 <- rnorm(100, mean = 5)
+trace_1 <- rnorm(100, mean = 0)
+trace_2 <- rnorm(100, mean = -5)
+x <- c(1:100)
+
+data <- data.frame(x, trace_0, trace_1, trace_2)
+
+fig <- plot_ly(data, x = ~x, y = ~trace_0, name = 'trace 0', type = 'scatter', mode = 'lines') 
+fig <- fig %>% add_trace(y = ~trace_1, name = 'trace 1', mode = 'lines+markers') 
+fig <- fig %>% add_trace(y = ~trace_2, name = 'trace 2', mode = 'markers')
+
+fig
+
+
+```
+### Density Plot
+```r
+library(plotly)
+
+dens <- with(diamonds, tapply(price, INDEX = cut, density))
+df <- data.frame(
+  x = unlist(lapply(dens, "[[", "x")),
+  y = unlist(lapply(dens, "[[", "y")),
+  cut = rep(names(dens), each = length(dens[[1]]$x))
+)
+
+fig <- plot_ly(df, x = ~x, y = ~y, color = ~cut) 
+fig <- fig %>% add_lines()
+
+fig
+
+```
+
+```{r}
+library(plotly)
+
+dens <- with(diamonds, tapply(price, INDEX = cut, density))
+df <- data.frame(
+  x = unlist(lapply(dens, "[[", "x")),
+  y = unlist(lapply(dens, "[[", "y")),
+  cut = rep(names(dens), each = length(dens[[1]]$x))
+)
+
+fig <- plot_ly(df, x = ~x, y = ~y, color = ~cut) 
+fig <- fig %>% add_lines()
+
+fig
+
+
+```
+
+## Bar Charts
+### Basic Bar Chart
+```r
+library(plotly)
+
+fig <- plot_ly(
+  x = c("giraffes", "orangutans", "monkeys"),
+  y = c(20, 14, 23),
+  name = "SF Zoo",
+  type = "bar"
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  x = c("giraffes", "orangutans", "monkeys"),
+  y = c(20, 14, 23),
+  name = "SF Zoo",
+  type = "bar"
+)
+
+fig
+
+```
+### Grouped Bar Chart
+```r
+library(plotly)
+
+Animals <- c("giraffes", "orangutans", "monkeys")
+SF_Zoo <- c(20, 14, 23)
+LA_Zoo <- c(12, 18, 29)
+data <- data.frame(Animals, SF_Zoo, LA_Zoo)
+
+fig <- plot_ly(data, x = ~Animals, y = ~SF_Zoo, type = 'bar', name = 'SF Zoo')
+fig <- fig %>% add_trace(y = ~LA_Zoo, name = 'LA Zoo')
+fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'group')
+
+fig
+```
+```{r}
+library(plotly)
+
+Animals <- c("giraffes", "orangutans", "monkeys")
+SF_Zoo <- c(20, 14, 23)
+LA_Zoo <- c(12, 18, 29)
+data <- data.frame(Animals, SF_Zoo, LA_Zoo)
+
+fig <- plot_ly(data, x = ~Animals, y = ~SF_Zoo, type = 'bar', name = 'SF Zoo')
+fig <- fig %>% add_trace(y = ~LA_Zoo, name = 'LA Zoo')
+fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'group')
+
+fig
+```
+### Stacked Bar Chart
+```r
+library(plotly)
+
+Animals <- c("giraffes", "orangutans", "monkeys")
+SF_Zoo <- c(20, 14, 23)
+LA_Zoo <- c(12, 18, 29)
+data <- data.frame(Animals, SF_Zoo, LA_Zoo)
+
+fig <- plot_ly(data, x = ~Animals, y = ~SF_Zoo, type = 'bar', name = 'SF Zoo')
+fig <- fig %>% add_trace(y = ~LA_Zoo, name = 'LA Zoo')
+fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+
+fig
+```
+```{r}
+library(plotly)
+
+Animals <- c("giraffes", "orangutans", "monkeys")
+SF_Zoo <- c(20, 14, 23)
+LA_Zoo <- c(12, 18, 29)
+data <- data.frame(Animals, SF_Zoo, LA_Zoo)
+
+fig <- plot_ly(data, x = ~Animals, y = ~SF_Zoo, type = 'bar', name = 'SF Zoo')
+fig <- fig %>% add_trace(y = ~LA_Zoo, name = 'LA Zoo')
+fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+
+fig
+```
+### Colored and Styled Bar Chart
+```r
+library(plotly)
+
+x <- c(1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012)
+roW <- c(219, 146, 112, 127, 124, 180, 236, 207, 236, 263, 350, 430, 474, 526, 488, 537, 500, 439)
+China <- c(16, 13, 10, 11, 28, 37, 43, 55, 56, 88, 105, 156, 270, 299, 340, 403, 549, 499)
+data <- data.frame(x, roW, China)
+
+fig <- plot_ly(data, x = ~x, y = ~roW, type = 'bar', name = 'Rest of the World',
+        marker = list(color = 'rgb(55, 83, 109)'))
+fig <- fig %>% add_trace(y = ~China, name = 'China', marker = list(color = 'rgb(26, 118, 255)'))
+fig <- fig %>% layout(title = 'US Export of Plastic Scrap',
+         xaxis = list(
+           title = "",
+           tickfont = list(
+             size = 14,
+             color = 'rgb(107, 107, 107)')),
+         yaxis = list(
+           title = 'USD (millions)',
+           titlefont = list(
+             size = 16,
+             color = 'rgb(107, 107, 107)'),
+           tickfont = list(
+             size = 14,
+             color = 'rgb(107, 107, 107)')),
+         legend = list(x = 0, y = 1, bgcolor = 'rgba(255, 255, 255, 0)', bordercolor = 'rgba(255, 255, 255, 0)'),
+         barmode = 'group', bargap = 0.15, bargroupgap = 0.1)
+
+fig
+```
+```{r}
+library(plotly)
+
+x <- c(1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012)
+roW <- c(219, 146, 112, 127, 124, 180, 236, 207, 236, 263, 350, 430, 474, 526, 488, 537, 500, 439)
+China <- c(16, 13, 10, 11, 28, 37, 43, 55, 56, 88, 105, 156, 270, 299, 340, 403, 549, 499)
+data <- data.frame(x, roW, China)
+
+fig <- plot_ly(data, x = ~x, y = ~roW, type = 'bar', name = 'Rest of the World',
+        marker = list(color = 'rgb(55, 83, 109)'))
+fig <- fig %>% add_trace(y = ~China, name = 'China', marker = list(color = 'rgb(26, 118, 255)'))
+fig <- fig %>% layout(title = 'US Export of Plastic Scrap',
+         xaxis = list(
+           title = "",
+           tickfont = list(
+             size = 14,
+             color = 'rgb(107, 107, 107)')),
+         yaxis = list(
+           title = 'USD (millions)',
+           titlefont = list(
+             size = 16,
+             color = 'rgb(107, 107, 107)'),
+           tickfont = list(
+             size = 14,
+             color = 'rgb(107, 107, 107)')),
+         legend = list(x = 0, y = 1, bgcolor = 'rgba(255, 255, 255, 0)', bordercolor = 'rgba(255, 255, 255, 0)'),
+         barmode = 'group', bargap = 0.15, bargroupgap = 0.1)
+
+fig
+```
+## Pie Charts
+### Basic Pie Chart
+```r
+library(plotly)
+
+USPersonalExpenditure <- data.frame("Categorie"=rownames(USPersonalExpenditure), USPersonalExpenditure)
+data <- USPersonalExpenditure[,c('Categorie', 'X1960')]
+
+fig <- plot_ly(data, labels = ~Categorie, values = ~X1960, type = 'pie')
+fig <- fig %>% layout(title = 'United States Personal Expenditures by Categories in 1960',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+fig
+
+```
+```{r}
+library(plotly)
+
+USPersonalExpenditure <- data.frame("Categorie"=rownames(USPersonalExpenditure), USPersonalExpenditure)
+data <- USPersonalExpenditure[,c('Categorie', 'X1960')]
+
+fig <- plot_ly(data, labels = ~Categorie, values = ~X1960, type = 'pie')
+fig <- fig %>% layout(title = 'United States Personal Expenditures by Categories in 1960',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+fig
+```
+### Donut Chart
+```r
+library(plotly)
+library(dplyr)
+
+# Get Manufacturer
+mtcars$manuf <- sapply(strsplit(rownames(mtcars), " "), "[[", 1)
+
+df <- mtcars
+df <- df %>% group_by(manuf)
+df <- df %>% summarize(count = n())
+fig <- df %>% plot_ly(labels = ~manuf, values = ~count)
+fig <- fig %>% add_pie(hole = 0.6)
+fig <- fig %>% layout(title = "Donut charts using Plotly",  showlegend = F,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+fig
+```
+```{r}
+library(plotly)
+library(dplyr)
+
+# Get Manufacturer
+mtcars$manuf <- sapply(strsplit(rownames(mtcars), " "), "[[", 1)
+
+df <- mtcars
+df <- df %>% group_by(manuf)
+df <- df %>% summarize(count = n())
+fig <- df %>% plot_ly(labels = ~manuf, values = ~count)
+fig <- fig %>% add_pie(hole = 0.6)
+fig <- fig %>% layout(title = "Donut charts using Plotly",  showlegend = F,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+fig
+```
+## Bubble Charts
+### Simple Bubble Chart
+```r
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/school_earnings.csv")
+
+fig <- plot_ly(data, x = ~Women, y = ~Men, text = ~School, type = 'scatter', mode = 'markers',
+        marker = list(size = ~Gap, opacity = 0.5))
+fig <- fig %>% layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+fig
+```
+```{r}
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/school_earnings.csv")
+
+fig <- plot_ly(data, x = ~Women, y = ~Men, text = ~School, type = 'scatter', mode = 'markers',
+        marker = list(size = ~Gap, opacity = 0.5))
+fig <- fig %>% layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+fig
+```
+### Mapping a Color Variable (Continuous)
+```r
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/school_earnings.csv")
+
+fig <- plot_ly(data, x = ~Women, y = ~Men, text = ~School, type = 'scatter', mode = 'markers', color = ~Gap, colors = 'Reds',
+        marker = list(size = ~Gap, opacity = 0.5))
+fig <- fig %>% layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+fig
+```
+```{r}
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/school_earnings.csv")
+
+fig <- plot_ly(data, x = ~Women, y = ~Men, text = ~School, type = 'scatter', mode = 'markers', color = ~Gap, colors = 'Reds',
+        marker = list(size = ~Gap, opacity = 0.5))
+fig <- fig %>% layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+fig
+
+```
+### Mapping a Color Variable (Categorical)
+```r
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/school_earnings.csv")
+
+data$State <- as.factor(c('Massachusetts', 'California', 'Massachusetts', 'Pennsylvania', 'New Jersey', 'Illinois', 'Washington DC',
+                          'Massachusetts', 'Connecticut', 'New York', 'North Carolina', 'New Hampshire', 'New York', 'Indiana',
+                          'New York', 'Michigan', 'Rhode Island', 'California', 'Georgia', 'California', 'California'))
+
+fig <- plot_ly(data, x = ~Women, y = ~Men, text = ~School, type = 'scatter', mode = 'markers', size = ~Gap, color = ~State, colors = 'Paired',
+        marker = list(opacity = 0.5, sizemode = 'diameter'))
+fig <- fig %>% layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE),
+         showlegend = FALSE)
+
+fig
+```
+```{r}
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/school_earnings.csv")
+
+data$State <- as.factor(c('Massachusetts', 'California', 'Massachusetts', 'Pennsylvania', 'New Jersey', 'Illinois', 'Washington DC',
+                          'Massachusetts', 'Connecticut', 'New York', 'North Carolina', 'New Hampshire', 'New York', 'Indiana',
+                          'New York', 'Michigan', 'Rhode Island', 'California', 'Georgia', 'California', 'California'))
+
+fig <- plot_ly(data, x = ~Women, y = ~Men, text = ~School, type = 'scatter', mode = 'markers', size = ~Gap, color = ~State, colors = 'Paired',
+        marker = list(opacity = 0.5, sizemode = 'diameter'))
+fig <- fig %>% layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE),
+         showlegend = FALSE)
+
+fig
+```
+### Styled Buble Chart
+```r
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv")
+
+data_2007 <- data[which(data$year == 2007),]
+data_2007 <- data_2007[order(data_2007$continent, data_2007$country),]
+slope <- 2.666051223553066e-05
+data_2007$size <- sqrt(data_2007$pop * slope)
+colors <- c('#4AC6B7', '#1972A4', '#965F8A', '#FF7070', '#C61951')
+
+fig <- plot_ly(data_2007, x = ~gdpPercap, y = ~lifeExp, color = ~continent, size = ~size, colors = colors,
+        type = 'scatter', mode = 'markers', sizes = c(min(data_2007$size), max(data_2007$size)),
+        marker = list(symbol = 'circle', sizemode = 'diameter',
+                      line = list(width = 2, color = '#FFFFFF')),
+        text = ~paste('Country:', country, '<br>Life Expectancy:', lifeExp, '<br>GDP:', gdpPercap,
+                      '<br>Pop.:', pop))
+fig <- fig %>% layout(title = 'Life Expectancy v. Per Capita GDP, 2007',
+         xaxis = list(title = 'GDP per capita (2000 dollars)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      range = c(2.003297660701705, 5.191505530708712),
+                      type = 'log',
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      gridwidth = 2),
+         yaxis = list(title = 'Life Expectancy (years)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      range = c(36.12621671352166, 91.72921793264332),
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      gridwith = 2),
+         paper_bgcolor = 'rgb(243, 243, 243)',
+         plot_bgcolor = 'rgb(243, 243, 243)')
+
+fig
+```
+```{r}
+library(plotly)
+
+data <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv")
+
+data_2007 <- data[which(data$year == 2007),]
+data_2007 <- data_2007[order(data_2007$continent, data_2007$country),]
+slope <- 2.666051223553066e-05
+data_2007$size <- sqrt(data_2007$pop * slope)
+colors <- c('#4AC6B7', '#1972A4', '#965F8A', '#FF7070', '#C61951')
+
+fig <- plot_ly(data_2007, x = ~gdpPercap, y = ~lifeExp, color = ~continent, size = ~size, colors = colors,
+        type = 'scatter', mode = 'markers', sizes = c(min(data_2007$size), max(data_2007$size)),
+        marker = list(symbol = 'circle', sizemode = 'diameter',
+                      line = list(width = 2, color = '#FFFFFF')),
+        text = ~paste('Country:', country, '<br>Life Expectancy:', lifeExp, '<br>GDP:', gdpPercap,
+                      '<br>Pop.:', pop))
+fig <- fig %>% layout(title = 'Life Expectancy v. Per Capita GDP, 2007',
+         xaxis = list(title = 'GDP per capita (2000 dollars)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      range = c(2.003297660701705, 5.191505530708712),
+                      type = 'log',
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      gridwidth = 2),
+         yaxis = list(title = 'Life Expectancy (years)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      range = c(36.12621671352166, 91.72921793264332),
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      gridwith = 2),
+         paper_bgcolor = 'rgb(243, 243, 243)',
+         plot_bgcolor = 'rgb(243, 243, 243)')
+
+fig
+```
+## Sankey Diagram
+### Basic Sankey Diagram
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = "sankey",
+    orientation = "h",
+
+    node = list(
+      label = c("A1", "A2", "B1", "B2", "C1", "C2"),
+      color = c("blue", "blue", "blue", "blue", "blue", "blue"),
+      pad = 15,
+      thickness = 20,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = c(0,1,0,2,3,3),
+      target = c(2,3,3,4,4,5),
+      value =  c(8,4,2,8,4,2)
+    )
+  )
+fig <- fig %>% layout(
+    title = "Basic Sankey Diagram",
+    font = list(
+      size = 10
+    )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = "sankey",
+    orientation = "h",
+
+    node = list(
+      label = c("A1", "A2", "B1", "B2", "C1", "C2"),
+      color = c("blue", "blue", "blue", "blue", "blue", "blue"),
+      pad = 15,
+      thickness = 20,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = c(0,1,0,2,3,3),
+      target = c(2,3,3,4,4,5),
+      value =  c(8,4,2,8,4,2)
+    )
+  )
+fig <- fig %>% layout(
+    title = "Basic Sankey Diagram",
+    font = list(
+      size = 10
+    )
+)
+
+fig
+```
+### Style Sankey Diagram
+```r
+library(plotly)
+library(rjson)
+
+json_file <- "https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/sankey_energy_dark.json"
+json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+
+fig <- plot_ly(
+    type = "sankey",
+    domain = list(
+      x =  c(0,1),
+      y =  c(0,1)
+    ),
+    orientation = "h",
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+
+    node = list(
+      label = json_data$data[[1]]$node$label,
+      color = json_data$data[[1]]$node$color,
+      pad = 15,
+      thickness = 15,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = json_data$data[[1]]$link$source,
+      target = json_data$data[[1]]$link$target,
+      value =  json_data$data[[1]]$link$value,
+      label =  json_data$data[[1]]$link$label
+    )
+  )
+fig <- fig %>% layout(
+    title = "Energy forecast for 2050<br>Source: Department of Energy & Climate Change, Tom Counsell via <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock</a>",
+    font = list(
+      size = 10,
+      color = 'white'
+    ),
+    xaxis = list(showgrid = F, zeroline = F, showticklabels = F),
+    yaxis = list(showgrid = F, zeroline = F, showticklabels = F),
+    plot_bgcolor = 'black',
+    paper_bgcolor = 'black'
+)
+
+fig
+```
+```{r}
+library(plotly)
+library(rjson)
+
+json_file <- "https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/sankey_energy_dark.json"
+json_data <- fromJSON(paste(readLines(json_file), collapse=""))
+
+fig <- plot_ly(
+    type = "sankey",
+    domain = list(
+      x =  c(0,1),
+      y =  c(0,1)
+    ),
+    orientation = "h",
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+
+    node = list(
+      label = json_data$data[[1]]$node$label,
+      color = json_data$data[[1]]$node$color,
+      pad = 15,
+      thickness = 15,
+      line = list(
+        color = "white",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = json_data$data[[1]]$link$source,
+      target = json_data$data[[1]]$link$target,
+      value =  json_data$data[[1]]$link$value,
+      label =  json_data$data[[1]]$link$label
+    )
+  )
+fig <- fig %>% layout(
+    title = "Energy forecast for 2050<br>Source: Department of Energy & Climate Change, Tom Counsell via <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock</a>",
+    font = list(
+      size = 10,
+      color = 'white'
+    ),
+    xaxis = list(showgrid = F, zeroline = F, showticklabels = F),
+    yaxis = list(showgrid = F, zeroline = F, showticklabels = F),
+    plot_bgcolor = 'black',
+    paper_bgcolor = 'black'
+)
+
+fig
+```
+
+
+
+<!--chapter:end:basic.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Statistical Charts
+
+## 2D Histograms
+
+A 2D histogram is a visualization of a bivariate distribution. And it looks like a heat map.
+
+``` r
+#
+library(plotly)
+
+s <- matrix(c(1, -.75, -.75, 1), ncol = 2)
+obs <- mvtnorm::rmvnorm(500, sigma = s)
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg)
+fig2 <- subplot(
+  fig %>% add_markers(alpha = 0.2),
+  fig %>% add_histogram2d()
+)
+
+fig2
+```
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = mtcars, x = ~hp, y= ~mpg)
+fig2 <- subplot(
+  fig %>% add_markers(alpha = 0.5),
+  fig %>% add_histogram2d(colorscale = "Blues")
+)
+
+fig2
+
+```
+
+## Box Plot
+
+### Basic Boxplot
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box")
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box")
+
+fig
+```
+
+### Horizontal Boxplot
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, x= ~mpg, type = "box")
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, x= ~mpg, type = "box")
+
+fig
+```
+
+### Adding Jittered Points
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box", boxpoints = "all", jitter = 0.3)
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, y= ~mpg, type = "box", boxpoints = "all", jitter = 0.3)
+
+fig
+
+```
+
+### Several Box Plots
+
+``` r
+fig <- plot_ly(data = mtcars, y= ~mpg, color = ~as.factor(cyl), type = "box")
+
+fig
+```
+
+```{r}
+fig <- plot_ly(data = mtcars, y= ~mpg, color = ~as.factor(cyl), type = "box")
+
+fig
+```
+
+## Histograms
+
+### Basic Histograms
+
+``` r
+library(plotly)
+fig <- plot_ly(data = mtcars, x = ~hp, type = "histogram", nbinsx = 15)
+
+fig
+```
+
+```{r}
+library(plotly)
+fig <- plot_ly(data = mtcars, x = ~hp, type = "histogram", nbinsx = 15)
+
+fig
+
+```
+
+### Stacked Histogram
+
+``` r
+
+fig <- plot_ly(data = mtcars, x = ~hp,
+             type = "histogram",
+             cumulative = list(enabled=TRUE),
+             nbinsx = 15)
+
+fig
+```
+
+```{r}
+
+fig <- plot_ly(data = mtcars, x = ~hp,
+             type = "histogram",
+             cumulative = list(enabled=TRUE),
+             nbinsx = 15)
+
+fig
+```
+
+## Violin Plots
+
+``` r
+fig <- mtcars %>%
+  plot_ly(
+    y = ~hp,
+    type = 'violin',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    x0 = 'Horse Power'
+  ) 
+
+fig <- fig %>%
+  layout(
+    yaxis = list(
+      title = "",
+      zeroline = F
+    )
+  )
+
+fig
+```
+
+```{r}
+fig <- mtcars %>%
+  plot_ly(
+    y = ~hp,
+    type = 'violin',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    x0 = 'Horse Power'
+  ) 
+
+fig <- fig %>%
+  layout(
+    yaxis = list(
+      title = "",
+      zeroline = F
+    )
+  )
+
+fig
+
+```
+
+<!--chapter:end:statistical.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Scientific Charts
+## Log Plots
+### Log Axes
+```r
+library(plotly)
+d <- diamonds[sample(nrow(diamonds), 1000), ]
+# without log scales
+fig <- plot_ly(d, x = ~carat, y = ~price) %>% add_markers()
+
+fig
+```
+```{r}
+library(plotly)
+d <- diamonds[sample(nrow(diamonds), 1000), ]
+# without log scales
+fig <- plot_ly(d, x = ~carat, y = ~price) %>% add_markers()
+
+fig
+```
+```r
+# with log scales
+fig <- layout(fig, xaxis = list(type = "log"),
+       yaxis = list(type = "log"))
+
+fig
+```
+```{r}
+# with log scales
+fig <- layout(fig, xaxis = list(type = "log"),
+       yaxis = list(type = "log"))
+
+fig
+```
+
+## Contour Plots
+### Basic Contour
+```r
+library(plotly)
+
+fig <- plot_ly(z = ~volcano, type = "contour")
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(z = ~volcano, type = "contour")
+
+fig
+```
+### Smoothing Contour Coloring
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'contour',
+  z = matrix(c(10, 10.625, 12.5, 15.625, 20, 5.625, 6.25, 8.125, 
+               11.25, 15.625, 2.5, 3.125, 5, 8.125, 12.5, 0.625, 
+               1.25, 3.125, 6.25, 10.625, 0, 0.625, 2.5, 5.625, 
+               10), nrow=5, ncol=5),
+  contours = list(
+    coloring = 'heatmap'
+  )
+)
+
+fig
+
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'contour',
+  z = matrix(c(10, 10.625, 12.5, 15.625, 20, 5.625, 6.25, 8.125, 
+               11.25, 15.625, 2.5, 3.125, 5, 8.125, 12.5, 0.625, 
+               1.25, 3.125, 6.25, 10.625, 0, 0.625, 2.5, 5.625, 
+               10), nrow=5, ncol=5),
+  contours = list(
+    coloring = 'heatmap'
+  )
+)
+
+fig
+
+```
+
+## Heatmaps
+### Basic Heatmap
+```r
+library(plotly)
+fig <- plot_ly(z = volcano, type = "heatmap")
+
+fig
+```
+```{r}
+library(plotly)
+fig <- plot_ly(z = volcano, type = "heatmap")
+
+fig
+```
+### Sequential Colorscales: Greys
+```r
+fig <- plot_ly(z = volcano, colors = "Greys", type = "heatmap")
+
+fig
+```
+```{r}
+fig <- plot_ly(z = volcano, colors = "Greys", type = "heatmap")
+
+fig
+```
+
+## Parallel Coordinates
+### Basic Parallel Cordinates Plots
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/iris.csv")
+
+fig <- df %>% plot_ly(type = 'parcoords',
+          line = list(color = ~species_id,
+                      colorscale = list(c(0,'red'),c(0.5,'green'),c(1,'blue'))),
+          dimensions = list(
+            list(range = c(2,4.5),
+                 label = 'Sepal Width', values = ~sepal_width),
+            list(range = c(4,8),
+                 constraintrange = c(5,6),
+                 label = 'Sepal Length', values = ~sepal_length),
+            list(range = c(0,2.5),
+                 label = 'Petal Width', values = ~petal_width),
+            list(range = c(1,7),
+                 label = 'Petal Length', values = ~petal_length)
+            )
+          )
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/iris.csv")
+
+fig <- df %>% plot_ly(type = 'parcoords',
+          line = list(color = ~species_id,
+                      colorscale = list(c(0,'red'),c(0.5,'green'),c(1,'blue'))),
+          dimensions = list(
+            list(range = c(2,4.5),
+                 label = 'Sepal Width', values = ~sepal_width),
+            list(range = c(4,8),
+                 constraintrange = c(5,6),
+                 label = 'Sepal Length', values = ~sepal_length),
+            list(range = c(0,2.5),
+                 label = 'Petal Width', values = ~petal_width),
+            list(range = c(1,7),
+                 label = 'Petal Length', values = ~petal_length)
+            )
+          )
+
+fig
+```
+### Advanced Parallel Coordinates Plot
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/parcoords_data.csv")
+
+fig <- df %>%
+  plot_ly(width = 1000, height = 600) 
+fig <- fig %>% add_trace(type = 'parcoords',
+          line = list(color = ~colorVal,
+                      colorscale = 'Jet',
+                      showscale = TRUE,
+                      reversescale = TRUE,
+                      cmin = -4000,
+                      cmax = -100),
+          dimensions = list(
+            list(range = c(~min(blockHeight),~max(blockHeight)),
+                 constraintrange = c(100000,150000),
+                 label = 'Block Height', values = ~blockHeight),
+            list(range = c(~min(blockWidth),~max(blockWidth)),
+                 label = 'Block Width', values = ~blockWidth),
+            list(tickvals = c(0,0.5,1,2,3),
+                 ticktext = c('A','AB','B','Y','Z'),
+                 label = 'Cyclinder Material', values = ~cycMaterial),
+            list(range = c(-1,4),
+                 tickvals = c(0,1,2,3),
+                 label = 'Block Material', values = ~blockMaterial),
+            list(range = c(~min(totalWeight),~max(totalWeight)),
+                 visible = TRUE,
+                 label = 'Total Weight', values = ~totalWeight),
+            list(range = c(~min(assemblyPW),~max(assemblyPW)),
+                 label = 'Assembly Penalty Weight', values = ~assemblyPW),
+            list(range = c(~min(HstW),~max(HstW)),
+                 label = 'Height st Width', values = ~HstW),
+            list(range = c(~min(minHW),~max(minHW)),
+                 label = 'Min Height Width', values = ~minHW),
+            list(range = c(~min(minWD),~max(minWD)),
+                 label = 'Min Width Diameter', values = ~minWD),
+            list(range = c(~min(rfBlock),~max(rfBlock)),
+                 label = 'RF Block', values = ~rfBlock)
+            )
+          )
+
+
+fig
+
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/parcoords_data.csv")
+
+fig <- df %>%
+  plot_ly(width = 1000, height = 600) 
+fig <- fig %>% add_trace(type = 'parcoords',
+          line = list(color = ~colorVal,
+                      colorscale = 'Jet',
+                      showscale = TRUE,
+                      reversescale = TRUE,
+                      cmin = -4000,
+                      cmax = -100),
+          dimensions = list(
+            list(range = c(~min(blockHeight),~max(blockHeight)),
+                 constraintrange = c(100000,150000),
+                 label = 'Block Height', values = ~blockHeight),
+            list(range = c(~min(blockWidth),~max(blockWidth)),
+                 label = 'Block Width', values = ~blockWidth),
+            list(tickvals = c(0,0.5,1,2,3),
+                 ticktext = c('A','AB','B','Y','Z'),
+                 label = 'Cyclinder Material', values = ~cycMaterial),
+            list(range = c(-1,4),
+                 tickvals = c(0,1,2,3),
+                 label = 'Block Material', values = ~blockMaterial),
+            list(range = c(~min(totalWeight),~max(totalWeight)),
+                 visible = TRUE,
+                 label = 'Total Weight', values = ~totalWeight),
+            list(range = c(~min(assemblyPW),~max(assemblyPW)),
+                 label = 'Assembly Penalty Weight', values = ~assemblyPW),
+            list(range = c(~min(HstW),~max(HstW)),
+                 label = 'Height st Width', values = ~HstW),
+            list(range = c(~min(minHW),~max(minHW)),
+                 label = 'Min Height Width', values = ~minHW),
+            list(range = c(~min(minWD),~max(minWD)),
+                 label = 'Min Width Diameter', values = ~minWD),
+            list(range = c(~min(rfBlock),~max(rfBlock)),
+                 label = 'RF Block', values = ~rfBlock)
+            )
+          )
+
+
+fig
+
+```
+## Polar Charts
+### Basic Polar Charts
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatterpolar',
+  r = c(0,1,2,2),
+  theta = c(0,45,90,0),
+  mode = 'markers'
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatterpolar',
+  r = c(0,1,2,2),
+  theta = c(0,45,90,0),
+  mode = 'markers'
+)
+
+fig
+```
+### Line Polar Charts
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/polar_dataset.csv")
+
+fig <- plot_ly(
+  df,
+  type = 'scatterpolar',
+  mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x1,
+    theta = ~y,
+    name = 'Figure8',
+    line = list(
+      color = 'peru'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x2,
+    theta = ~y,
+    name = 'Cardioid',
+    line = list(
+      color = 'darkviolet'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x3,
+    theta = ~y,
+    name = 'Hypercardioid',
+    line = list(
+      color = 'deepskyblue'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x4,
+    theta = ~y,
+    name = 'Subcardioid',
+    line = list(
+      color = 'orangered'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x5,
+    theta = ~y,
+    name = 'Supercardioid',
+    line = list(
+      color = 'green'
+    )
+  ) 
+
+fig <- fig %>%
+  layout(
+    title = 'Mic Patterns',
+    font = list(
+      family = 'Arial',
+      size = 12,
+      color = '#000'
+    ),
+    showlegend = F
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/polar_dataset.csv")
+
+fig <- plot_ly(
+  df,
+  type = 'scatterpolar',
+  mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x1,
+    theta = ~y,
+    name = 'Figure8',
+    line = list(
+      color = 'peru'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x2,
+    theta = ~y,
+    name = 'Cardioid',
+    line = list(
+      color = 'darkviolet'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x3,
+    theta = ~y,
+    name = 'Hypercardioid',
+    line = list(
+      color = 'deepskyblue'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x4,
+    theta = ~y,
+    name = 'Subcardioid',
+    line = list(
+      color = 'orangered'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = ~x5,
+    theta = ~y,
+    name = 'Supercardioid',
+    line = list(
+      color = 'green'
+    )
+  ) 
+
+fig <- fig %>%
+  layout(
+    title = 'Mic Patterns',
+    font = list(
+      family = 'Arial',
+      size = 12,
+      color = '#000'
+    ),
+    showlegend = F
+  )
+
+fig
+```
+### Area Polar Area
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 1.5, 1.5, 0, 2.5, 2.5, 0),
+    theta = c(0, 10, 25, 0, 205, 215, 0),
+    fill = 'toself',
+    fillcolor = '#709Bff',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3.5, 3.5, 0),
+    theta = c(0, 55, 75, 0),
+    fill = 'toself',
+    fillcolor = '#E4FF87',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4.5, 4.5, 0, 4.5, 4.5, 0),
+    theta = c(0, 100, 120, 0, 305, 320, 0),
+    fill = 'toself',
+    fillcolor = '#FFAA70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4, 4, 0),
+    theta = c(0, 165, 195, 0),
+    fill = 'toself',
+    fillcolor = '#FFDF70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3, 3, 0),
+    theta = c(0, 262.5, 277.5, 0),
+    fill = 'toself',
+    fillcolor = '#B6FFB4',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,5)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    mode = 'lines'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 1.5, 1.5, 0, 2.5, 2.5, 0),
+    theta = c(0, 10, 25, 0, 205, 215, 0),
+    fill = 'toself',
+    fillcolor = '#709Bff',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3.5, 3.5, 0),
+    theta = c(0, 55, 75, 0),
+    fill = 'toself',
+    fillcolor = '#E4FF87',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4.5, 4.5, 0, 4.5, 4.5, 0),
+    theta = c(0, 100, 120, 0, 305, 320, 0),
+    fill = 'toself',
+    fillcolor = '#FFAA70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 4, 4, 0),
+    theta = c(0, 165, 195, 0),
+    fill = 'toself',
+    fillcolor = '#FFDF70',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0, 3, 3, 0),
+    theta = c(0, 262.5, 277.5, 0),
+    fill = 'toself',
+    fillcolor = '#B6FFB4',
+    line = list(
+      color = 'black'
+    )
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,5)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+
+## Radar Charts
+### Basic Radar Charts
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    ),
+    showlegend = F
+  )
+
+fig
+```
+### Multiple Trace Radar Charts
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group A'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(1.5, 10, 39, 31, 15, 1.5),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group B'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    )
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = 'scatterpolar',
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(39, 28, 8, 7, 28, 39),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group A'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(1.5, 10, 39, 31, 15, 1.5),
+    theta = c('A','B','C', 'D', 'E', 'A'),
+    name = 'Group B'
+  ) 
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,50)
+      )
+    )
+  )
+
+fig
+```
+
+
+<!--chapter:end:scientific.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Financial Charts
+## Time Series and Date Axess
+### Time Series using Axes of type date
+```r
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', width = 900)
+
+
+fig
+```
+```{r}
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', width = 900)
+
+
+fig
+```
+### Configuring Tick Labels
+```r
+library(tidyquant)
+library(plotly)
+tickers = c("GOOG", "AAPL", "AMZN", "META", "NFLX", "MSFT")
+for (i in tickers){
+  getSymbols(i,
+             from = "2020-01-01",
+             to = "2021-12-31")}
+stock <- data.frame(GOOG$GOOG.Adjusted,
+                    AAPL$AAPL.Adjusted,
+                    AMZN$AMZN.Adjusted,
+                    META$META.Adjusted,
+                    NFLX$NFLX.Adjusted,
+                    MSFT$MSFT.Adjusted)
+stock$GOOG.Adjusted <- stock$GOOG.Adjusted/stock$GOOG.Adjusted[1]
+stock$AAPL.Adjusted <- stock$AAPL.Adjusted/stock$AAPL.Adjusted[1]
+stock$AMZN.Adjusted <- stock$AMZN.Adjusted/stock$AMZN.Adjusted[1]
+stock$META.Adjusted <- stock$META.Adjusted/stock$META.Adjusted[1]
+stock$NFLX.Adjusted <- stock$NFLX.Adjusted/stock$NFLX.Adjusted[1]
+stock$MSFT.Adjusted <- stock$MSFT.Adjusted/stock$MSFT.Adjusted[1]
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(tickers,'Dates')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Dates, y = ~GOOG, name = 'GOOG')%>%
+  add_trace(x = ~Dates, y = ~AAPL, name = 'AAPL')%>%
+  add_trace(x = ~Dates, y = ~AMZN, name = 'AMZN')%>%
+  add_trace(x = ~Dates, y = ~META, name = 'META')%>%
+  add_trace(x = ~Dates, y = ~NFLX, name = 'NFLX')%>%
+  add_trace(x = ~Dates, y = ~MSFT, name = 'MSFT')%>%
+  layout(title = 'custom tick labels',legend=list(title=list(text='variable')),
+         xaxis = list(dtick = "M1", tickformat="%b<br>%Y"), width = 1000)
+options(warn = -1)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6')
+
+
+fig
+```
+```{r}
+library(tidyquant)
+library(plotly)
+tickers = c("GOOG", "AAPL", "AMZN", "META", "NFLX", "MSFT")
+for (i in tickers){
+  getSymbols(i,
+             from = "2020-01-01",
+             to = "2021-12-31")}
+stock <- data.frame(GOOG$GOOG.Adjusted,
+                    AAPL$AAPL.Adjusted,
+                    AMZN$AMZN.Adjusted,
+                    META$META.Adjusted,
+                    NFLX$NFLX.Adjusted,
+                    MSFT$MSFT.Adjusted)
+stock$GOOG.Adjusted <- stock$GOOG.Adjusted/stock$GOOG.Adjusted[1]
+stock$AAPL.Adjusted <- stock$AAPL.Adjusted/stock$AAPL.Adjusted[1]
+stock$AMZN.Adjusted <- stock$AMZN.Adjusted/stock$AMZN.Adjusted[1]
+stock$META.Adjusted <- stock$META.Adjusted/stock$META.Adjusted[1]
+stock$NFLX.Adjusted <- stock$NFLX.Adjusted/stock$NFLX.Adjusted[1]
+stock$MSFT.Adjusted <- stock$MSFT.Adjusted/stock$MSFT.Adjusted[1]
+stock <- data.frame(stock,rownames(stock))
+colnames(stock) <- append(tickers,'Dates')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Dates, y = ~GOOG, name = 'GOOG')%>%
+  add_trace(x = ~Dates, y = ~AAPL, name = 'AAPL')%>%
+  add_trace(x = ~Dates, y = ~AMZN, name = 'AMZN')%>%
+  add_trace(x = ~Dates, y = ~META, name = 'META')%>%
+  add_trace(x = ~Dates, y = ~NFLX, name = 'NFLX')%>%
+  add_trace(x = ~Dates, y = ~MSFT, name = 'MSFT')%>%
+  layout(title = 'custom tick labels',legend=list(title=list(text='variable')),
+         xaxis = list(dtick = "M1", tickformat="%b<br>%Y"), width = 1000)
+options(warn = -1)
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6')
+
+
+fig
+```
+### Time Series with Range Selector Buttons
+```r
+
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F, title='Time Series with Range Slider and Selectors',
+         xaxis = list(rangeslider = list(visible = T),
+                      rangeselector=list(
+                        buttons=list(
+                          list(count=1, label="1m", step="month", stepmode="backward"),
+                          list(count=6, label="6m", step="month", stepmode="backward"),
+                          list(count=1, label="YTD", step="year", stepmode="todate"),
+                          list(count=1, label="1y", step="year", stepmode="backward"),
+                          list(step="all")
+                        ))))
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', margin = 0.1, width = 900)
+fig
+```
+```{r}
+
+library(plotly)
+
+stock <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+fig <- plot_ly(stock, type = 'scatter', mode = 'lines')%>%
+  add_trace(x = ~Date, y = ~AAPL.High)%>%
+  layout(showlegend = F, title='Time Series with Range Slider and Selectors',
+         xaxis = list(rangeslider = list(visible = T),
+                      rangeselector=list(
+                        buttons=list(
+                          list(count=1, label="1m", step="month", stepmode="backward"),
+                          list(count=6, label="6m", step="month", stepmode="backward"),
+                          list(count=1, label="YTD", step="year", stepmode="todate"),
+                          list(count=1, label="1y", step="year", stepmode="backward"),
+                          list(step="all")
+                        ))))
+fig <- fig %>%
+  layout(
+         xaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         yaxis = list(zerolinecolor = '#ffff',
+                      zerolinewidth = 2,
+                      gridcolor = 'ffff'),
+         plot_bgcolor='#e5ecf6', margin = 0.1, width = 900)
+fig
+```
+
+## Candlestick Charts
+### Basic Candlestick
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+# basic example of ohlc charts
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic Candlestick Chart")
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+# basic example of ohlc charts
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic Candlestick Chart")
+
+fig
+```
+### Customise the fig ure with Shapes and Annotations
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+)
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Apple Stock",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+)
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+)
+
+fig <- df %>% plot_ly(x = ~Date, type="candlestick",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Apple Stock",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+
+## OHLC Charts
+### Basic OHLC Chart
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic OHLC Chart",
+         xaxis = list(rangeslider = list(visible = F)))
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Basic OHLC Chart",
+         xaxis = list(rangeslider = list(visible = F)))
+
+fig
+```
+### Customise the Figure with Shapes and Annotations
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+          )
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+          )
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Custom Colors",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+
+# annotation
+a <- list(text = "Stock Split",
+          x = '2014-06-06',
+          y = 1.02,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'left',
+          showarrow = FALSE
+          )
+
+# use shapes to create a line
+l <- list(type = line,
+          x0 = '2014-06-06',
+          x1 = '2014-06-06',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5)
+          )
+
+fig <- df %>% plot_ly(x = ~Date, type="ohlc",
+          open = ~AAPL.Open, close = ~AAPL.Close,
+          high = ~AAPL.High, low = ~AAPL.Low) 
+fig <- fig %>% layout(title = "Custom Colors",
+         annotations = a,
+         shapes = l)
+
+fig
+```
+
+
+## Waterfall Charts
+### Basic Waterfall Chart
+```r
+library(plotly)
+
+x= list("Sales", "Consulting", "Net revenue", "Purchases", "Other expenses", "Profit before tax")
+measure= c("relative", "relative", "total", "relative", "relative", "total")
+text= c("+60", "+80", "", "-40", "-20", "Total")
+y= c(60, 80, 0, -40, -20, 0)
+data = data.frame(x=factor(x,levels=x),measure,text,y)
+
+fig <- plot_ly(
+  data, name = "20", type = "waterfall", measure = ~measure,
+  x = ~x, textposition = "outside", y= ~y, text =~text,
+  connector = list(line = list(color= "rgb(63, 63, 63)"))) 
+fig <- fig %>%
+  layout(title = "Profit and loss statement 2018",
+        xaxis = list(title = ""),
+        yaxis = list(title = ""),
+        autosize = TRUE,
+        showlegend = TRUE)
+
+fig
+```
+```{r}
+library(plotly)
+
+x= list("Sales", "Consulting", "Net revenue", "Purchases", "Other expenses", "Profit before tax")
+measure= c("relative", "relative", "total", "relative", "relative", "total")
+text= c("+60", "+80", "", "-40", "-20", "Total")
+y= c(60, 80, 0, -40, -20, 0)
+data = data.frame(x=factor(x,levels=x),measure,text,y)
+
+fig <- plot_ly(
+  data, name = "20", type = "waterfall", measure = ~measure,
+  x = ~x, textposition = "outside", y= ~y, text =~text,
+  connector = list(line = list(color= "rgb(63, 63, 63)"))) 
+fig <- fig %>%
+  layout(title = "Profit and loss statement 2018",
+        xaxis = list(title = ""),
+        yaxis = list(title = ""),
+        autosize = TRUE,
+        showlegend = TRUE)
+
+fig
+```
+
+## Funnel Charts
+```r
+# Need to install plotly from Github to get funnel plots
+devtools::install_github("ropensci/plotly")
+```
+### Basic Funnel Plot
+```r
+library(plotly)
+
+fig <- plot_ly() 
+fig <- fig %>%
+  add_trace(
+  type = "funnel",
+  y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+  x = c(39, 27.4, 20.6, 11, 2)) 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent")))
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly() 
+fig <- fig %>%
+  add_trace(
+  type = "funnel",
+  y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+  x = c(39, 27.4, 20.6, 11, 2)) 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent")))
+
+fig
+```
+### Stacked Funnel Plot
+```r
+library(plotly)
+
+fig <- plot_ly(
+    type = "funnel",
+    name = 'Montreal',
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price"),
+    x = c(120, 60, 30, 20),
+    textinfo = "value+percent initial") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Toronto',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+    x = c(100, 60, 40, 30, 20),
+    textposition = "inside",
+    textinfo = "value+percent previous") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Vancouver',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized"),
+  x = c(90, 70, 50, 30, 10, 5),
+  textposition = "outside",
+  textinfo = "value+percent total") 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized")))
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+    type = "funnel",
+    name = 'Montreal',
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price"),
+    x = c(120, 60, 30, 20),
+    textinfo = "value+percent initial") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Toronto',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"),
+    x = c(100, 60, 40, 30, 20),
+    textposition = "inside",
+    textinfo = "value+percent previous") 
+fig <- fig %>%
+  add_trace(
+    type = "funnel",
+    name = 'Vancouver',
+    orientation = "h",
+    y = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized"),
+  x = c(90, 70, 50, 30, 10, 5),
+  textposition = "outside",
+  textinfo = "value+percent total") 
+fig <- fig %>%
+  layout(yaxis = list(categoryarray = c("Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "Finalized")))
+
+fig
+```
+### Basic Area Funnel Plot
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = "funnelarea",
+  text = c("The 1st","The 2nd", "The 3rd", "The 4th", "The 5th"),
+  values = c(5, 4, 3, 2, 1))
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = "funnelarea",
+  text = c("The 1st","The 2nd", "The 3rd", "The 4th", "The 5th"),
+  values = c(5, 4, 3, 2, 1))
+
+fig
+```
+
+<!--chapter:end:financial.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Maps
+## Choropleth Maps
+### Choropleth Map Using GeoJSON
+```r
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
+counties <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/fips-unemp-16.csv"
+df <- read.csv(url2, colClasses=c(fips="character"))
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+fig <- plot_ly()
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=counties,
+    locations=df$fips,
+    z=df$unemp,
+    colorscale="Viridis",
+    zmin=0,
+    zmax=12,
+    marker=list(line=list(
+      width=0)
+    )
+  )
+fig <- fig %>% colorbar(title = "Unemployment Rate (%)")
+fig <- fig %>% layout(
+    title = "2016 US Unemployment by County"
+)
+
+fig <- fig %>% layout(
+    geo = g
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
+counties <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/fips-unemp-16.csv"
+df <- read.csv(url2, colClasses=c(fips="character"))
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+fig <- plot_ly()
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=counties,
+    locations=df$fips,
+    z=df$unemp,
+    colorscale="Viridis",
+    zmin=0,
+    zmax=12,
+    marker=list(line=list(
+      width=0)
+    )
+  )
+fig <- fig %>% colorbar(title = "Unemployment Rate (%)")
+fig <- fig %>% layout(
+    title = "2016 US Unemployment by County"
+)
+
+fig <- fig %>% layout(
+    geo = g
+  )
+
+fig
+
+```
+### Indexing by GeoJSON Properties
+```r
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/election.geojson'
+geojson <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/election.csv"
+df <- read.csv(url2)
+g <- list(
+  fitbounds = "locations",
+  visible = FALSE
+)
+fig <- plot_ly() 
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=geojson,
+    locations=df$district,
+    z=df$Bergeron,
+    colorscale="Viridis",
+    featureidkey="properties.district"
+  )
+fig <- fig %>% layout(
+    geo = g
+  )
+fig <- fig %>% colorbar(title = "Bergeron Votes")
+fig <- fig %>% layout(
+    title = "2013 Montreal Election"
+)
+fig
+```
+```{r}
+library(plotly)
+library(rjson)
+
+url <- 'https://raw.githubusercontent.com/plotly/datasets/master/election.geojson'
+geojson <- rjson::fromJSON(file=url)
+url2<- "https://raw.githubusercontent.com/plotly/datasets/master/election.csv"
+df <- read.csv(url2)
+g <- list(
+  fitbounds = "locations",
+  visible = FALSE
+)
+fig <- plot_ly() 
+fig <- fig %>% add_trace(
+    type="choropleth",
+    geojson=geojson,
+    locations=df$district,
+    z=df$Bergeron,
+    colorscale="Viridis",
+    featureidkey="properties.district"
+  )
+fig <- fig %>% layout(
+    geo = g
+  )
+fig <- fig %>% colorbar(title = "Bergeron Votes")
+fig <- fig %>% layout(
+    title = "2013 Montreal Election"
+)
+fig
+```
+### Customize choropleth chart
+```r
+library(plotly)
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df$hover <- with(df, paste(state, '<br>', "Beef", beef, "Dairy", dairy, "<br>",
+                           "Fruits", total.fruits, "Veggies", total.veggies,
+                           "<br>", "Wheat", wheat, "Corn", corn))
+# give state boundaries a white border
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states')
+fig <- fig %>% add_trace(
+    z = ~total.exports, text = ~hover, locations = ~code,
+    color = ~total.exports, colors = 'Purples'
+  )
+fig <- fig %>% colorbar(title = "Millions USD")
+fig <- fig %>% layout(
+    title = '2011 US Agriculture Exports by State<br>(Hover for breakdown)',
+    geo = g
+  )
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df$hover <- with(df, paste(state, '<br>', "Beef", beef, "Dairy", dairy, "<br>",
+                           "Fruits", total.fruits, "Veggies", total.veggies,
+                           "<br>", "Wheat", wheat, "Corn", corn))
+# give state boundaries a white border
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states')
+fig <- fig %>% add_trace(
+    z = ~total.exports, text = ~hover, locations = ~code,
+    color = ~total.exports, colors = 'Purples'
+  )
+fig <- fig %>% colorbar(title = "Millions USD")
+fig <- fig %>% layout(
+    title = '2011 US Agriculture Exports by State<br>(Hover for breakdown)',
+    geo = g
+  )
+
+fig
+```
+### World Choropleth Map
+```r
+
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+# specify map projection/options
+g <- list(
+  showframe = FALSE,
+  showcoastlines = FALSE,
+  projection = list(type = 'Mercator')
+)
+
+fig <- plot_geo(df)
+fig <- fig %>% add_trace(
+    z = ~GDP..BILLIONS., color = ~GDP..BILLIONS., colors = 'Blues',
+    text = ~COUNTRY, locations = ~CODE, marker = list(line = l)
+  )
+fig <- fig %>% colorbar(title = 'GDP Billions US$', tickprefix = '$')
+fig <- fig %>% layout(
+    title = '2014 Global GDP<br>Source:<a href="https://www.cia.gov/library/publications/the-world-factbook/fields/2195.html">CIA World Factbook</a>',
+    geo = g
+  )
+
+fig
+```
+```{r}
+
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+# specify map projection/options
+g <- list(
+  showframe = FALSE,
+  showcoastlines = FALSE,
+  projection = list(type = 'Mercator')
+)
+
+fig <- plot_geo(df)
+fig <- fig %>% add_trace(
+    z = ~GDP..BILLIONS., color = ~GDP..BILLIONS., colors = 'Blues',
+    text = ~COUNTRY, locations = ~CODE, marker = list(line = l)
+  )
+fig <- fig %>% colorbar(title = 'GDP Billions US$', tickprefix = '$')
+fig <- fig %>% layout(
+    title = '2014 Global GDP<br>Source:<a href="https://www.cia.gov/library/publications/the-world-factbook/fields/2195.html">CIA World Factbook</a>',
+    geo = g
+  )
+
+fig
+```
+
+## Scatter Plots on Maps
+### Basic Scatter on Map
+```r
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2011_february_us_airport_traffic.csv')
+
+# geo styling
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray95"),
+  subunitcolor = toRGB("gray85"),
+  countrycolor = toRGB("gray85"),
+  countrywidth = 0.5,
+  subunitwidth = 0.5
+)
+
+fig <- plot_geo(df, lat = ~lat, lon = ~long)
+fig <- fig %>% add_markers(
+    text = ~paste(airport, city, state, paste("Arrivals:", cnt), sep = "<br />"),
+    color = ~cnt, symbol = I("square"), size = I(8), hoverinfo = "text"
+  )
+fig <- fig %>% colorbar(title = "Incoming flights<br />February 2011")
+fig <- fig %>% layout(
+    title = 'Most trafficked US airports<br />(Hover for airport)', geo = g
+  )
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2011_february_us_airport_traffic.csv')
+
+# geo styling
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray95"),
+  subunitcolor = toRGB("gray85"),
+  countrycolor = toRGB("gray85"),
+  countrywidth = 0.5,
+  subunitwidth = 0.5
+)
+
+fig <- plot_geo(df, lat = ~lat, lon = ~long)
+fig <- fig %>% add_markers(
+    text = ~paste(airport, city, state, paste("Arrivals:", cnt), sep = "<br />"),
+    color = ~cnt, symbol = I("square"), size = I(8), hoverinfo = "text"
+  )
+fig <- fig %>% colorbar(title = "Incoming flights<br />February 2011")
+fig <- fig %>% layout(
+    title = 'Most trafficked US airports<br />(Hover for airport)', geo = g
+  )
+
+fig
+```
+### Style Scatter Map Layout
+```r
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv')
+
+# change default color scale title
+m <- list(colorbar = list(title = "Total Inches"))
+
+# geo styling
+g <- list(
+  scope = 'north america',
+  showland = TRUE,
+  landcolor = toRGB("grey83"),
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white"),
+  showlakes = TRUE,
+  lakecolor = toRGB("white"),
+  showsubunits = TRUE,
+  showcountries = TRUE,
+  resolution = 50,
+  projection = list(
+    type = 'conic conformal',
+    rotation = list(lon = -100)
+  ),
+  lonaxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(-140, -55),
+    dtick = 5
+  ),
+  lataxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(20, 60),
+    dtick = 5
+  )
+)
+
+fig <- plot_geo(df, lat = ~Lat, lon = ~Lon, color = ~Globvalue)
+fig <- fig %>% add_markers(
+    text = ~paste(df$Globvalue, "inches"), hoverinfo = "text"
+  )
+fig <- fig %>% layout(title = 'US Precipitation 06-30-2015<br>Source: NOAA', geo = g)
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv')
+
+# change default color scale title
+m <- list(colorbar = list(title = "Total Inches"))
+
+# geo styling
+g <- list(
+  scope = 'north america',
+  showland = TRUE,
+  landcolor = toRGB("grey83"),
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white"),
+  showlakes = TRUE,
+  lakecolor = toRGB("white"),
+  showsubunits = TRUE,
+  showcountries = TRUE,
+  resolution = 50,
+  projection = list(
+    type = 'conic conformal',
+    rotation = list(lon = -100)
+  ),
+  lonaxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(-140, -55),
+    dtick = 5
+  ),
+  lataxis = list(
+    showgrid = TRUE,
+    gridwidth = 0.5,
+    range = c(20, 60),
+    dtick = 5
+  )
+)
+
+fig <- plot_geo(df, lat = ~Lat, lon = ~Lon, color = ~Globvalue)
+fig <- fig %>% add_markers(
+    text = ~paste(df$Globvalue, "inches"), hoverinfo = "text"
+  )
+fig <- fig %>% layout(title = 'US Precipitation 06-30-2015<br>Source: NOAA', geo = g)
+
+fig
+```
+
+## Mapbox Density
+### Mapbox Access Token
+```r
+library(plotly)
+
+quakes = read.csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
+
+fig <- quakes 
+fig <- fig %>%
+  plot_ly(
+    type = 'densitymapbox',
+    lat = ~Latitude,
+    lon = ~Longitude,
+    coloraxis = 'coloraxis',
+    radius = 10) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style="stamen-terrain",
+      center= list(lon=180)), coloraxis = list(colorscale = "Viridis"))
+
+fig
+```
+```{r}
+library(plotly)
+
+quakes = read.csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
+
+fig <- quakes 
+fig <- fig %>%
+  plot_ly(
+    type = 'densitymapbox',
+    lat = ~Latitude,
+    lon = ~Longitude,
+    coloraxis = 'coloraxis',
+    radius = 10) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style="stamen-terrain",
+      center= list(lon=180)), coloraxis = list(colorscale = "Viridis"))
+
+fig
+```
+
+
+## Mapbox Layers
+### OpenStreetMap Tiles, no Token Needed
+```r
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    marker = list(color = "fuchsia"),
+    type = 'scattermapbox',
+    hovertext = us_cities[,"City"]) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style = 'open-street-map',
+      zoom =2.5,
+      center = list(lon = -88, lat = 34))) 
+
+fig
+```
+```{r}
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    marker = list(color = "fuchsia"),
+    type = 'scattermapbox',
+    hovertext = us_cities[,"City"]) 
+fig <- fig %>%
+  layout(
+    mapbox = list(
+      style = 'open-street-map',
+      zoom =2.5,
+      center = list(lon = -88, lat = 34))) 
+
+fig
+```
+### Base Map Below A Trace: No Token Needed
+```r
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    type = "scattermapbox",
+    hovertext = us_cities[,"City"],
+    marker = list(color = "fuchsia")) 
+fig <- fig %>%
+  layout(mapbox= list(
+    style = "white-bg",
+    zoom = 3,
+    center = list(lon = -93 ,lat= 41),
+    layers = list(list(
+      below = 'traces',
+      sourcetype = "raster",
+      source = list("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}")))))
+
+fig
+```
+```{r}
+library(plotly)
+
+us_cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+
+fig <- us_cities 
+fig <- fig %>%
+  plot_ly(
+    lat = ~lat,
+    lon = ~lon,
+    type = "scattermapbox",
+    hovertext = us_cities[,"City"],
+    marker = list(color = "fuchsia")) 
+fig <- fig %>%
+  layout(mapbox= list(
+    style = "white-bg",
+    zoom = 3,
+    center = list(lon = -93 ,lat= 41),
+    layers = list(list(
+      below = 'traces',
+      sourcetype = "raster",
+      source = list("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}")))))
+
+fig
+```
+
+## Bubble Maps
+### United States Bubble Map
+```r
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_us_cities.csv')
+
+df$q <- with(df, cut(pop, quantile(pop)))
+levels(df$q) <- paste(c("1st", "2nd", "3rd", "4th", "5th"), "Quantile")
+df$q <- as.ordered(df$q)
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray85"),
+  subunitwidth = 1,
+  countrywidth = 1,
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white")
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states', sizes = c(1, 250))
+fig <- fig %>% add_markers(
+    x = ~lon, y = ~lat, size = ~pop, color = ~q, hoverinfo = "text",
+    text = ~paste(df$name, "<br />", df$pop/1e6, " million")
+  )
+fig <- fig %>% layout(title = '2014 US city populations<br>(Click legend to toggle)', geo = g)
+
+fig
+```
+```{r}
+library(plotly)
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_us_cities.csv')
+
+df$q <- with(df, cut(pop, quantile(pop)))
+levels(df$q) <- paste(c("1st", "2nd", "3rd", "4th", "5th"), "Quantile")
+df$q <- as.ordered(df$q)
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray85"),
+  subunitwidth = 1,
+  countrywidth = 1,
+  subunitcolor = toRGB("white"),
+  countrycolor = toRGB("white")
+)
+
+fig <- plot_geo(df, locationmode = 'USA-states', sizes = c(1, 250))
+fig <- fig %>% add_markers(
+    x = ~lon, y = ~lat, size = ~pop, color = ~q, hoverinfo = "text",
+    text = ~paste(df$name, "<br />", df$pop/1e6, " million")
+  )
+fig <- fig %>% layout(title = '2014 US city populations<br>(Click legend to toggle)', geo = g)
+
+fig
+```
+
+
+
+<!--chapter:end:maps.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Artificial Intelligence and Machine Learning
+## ML Regression in R
+### Linear Regression with R
+```r
+library(reshape2)
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+data(tips)
+
+y <- tips$tip
+X <- tips$total_bill
+
+set.seed(123)
+tips_split <- initial_split(tips)
+tips_training <- tips_split %>% 
+  training()
+tips_test <- tips_split %>% 
+  testing()
+
+lm_model <- linear_reg() %>% 
+  set_engine('lm') %>% 
+  set_mode('regression') %>%
+  fit(tip ~ total_bill, data = tips_training) 
+
+x_range <- seq(min(X), max(X), length.out = 100)
+x_range <- matrix(x_range, nrow=100, ncol=1)
+xdf <- data.frame(x_range)
+colnames(xdf) <- c('total_bill')
+
+ydf <- lm_model %>%
+  predict(xdf) 
+
+colnames(ydf) <- c('tip')
+xy <- data.frame(xdf, ydf) 
+
+fig <- plot_ly(data = tips_training, x = ~total_bill, y = ~tip, type = 'scatter', name = 'train', mode = 'markers', alpha = 0.65) %>% 
+  add_trace(data = tips_test, x = ~total_bill, y = ~tip, type = 'scatter', name = 'test', mode = 'markers', alpha = 0.65 ) %>% 
+  add_trace(data = xy, x = ~total_bill, y = ~tip, name = 'prediction', mode = 'lines', alpha = 1)
+fig
+
+```
+```{r}
+library(reshape2)
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+data(tips)
+
+y <- tips$tip
+X <- tips$total_bill
+
+set.seed(123)
+tips_split <- initial_split(tips)
+tips_training <- tips_split %>% 
+  training()
+tips_test <- tips_split %>% 
+  testing()
+
+lm_model <- linear_reg() %>% 
+  set_engine('lm') %>% 
+  set_mode('regression') %>%
+  fit(tip ~ total_bill, data = tips_training) 
+
+x_range <- seq(min(X), max(X), length.out = 100)
+x_range <- matrix(x_range, nrow=100, ncol=1)
+xdf <- data.frame(x_range)
+colnames(xdf) <- c('total_bill')
+
+ydf <- lm_model %>%
+  predict(xdf) 
+
+colnames(ydf) <- c('tip')
+xy <- data.frame(xdf, ydf) 
+
+fig <- plot_ly(data = tips_training, x = ~total_bill, y = ~tip, type = 'scatter', name = 'train', mode = 'markers', alpha = 0.65) %>% 
+  add_trace(data = tips_test, x = ~total_bill, y = ~tip, type = 'scatter', name = 'test', mode = 'markers', alpha = 0.65 ) %>% 
+  add_trace(data = xy, x = ~total_bill, y = ~tip, name = 'prediction', mode = 'lines', alpha = 1)
+fig
+
+```
+### 3D Regression surface
+```r
+library(reshape2)
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+library(kernlab)
+library(pracma) #For meshgrid()
+data(iris)
+
+mesh_size <- .02
+margin <- 0
+X <- iris %>% select(Sepal.Width, Sepal.Length)
+y <- iris %>% select(Petal.Width)
+
+model <- svm_rbf(cost = 1.0) %>% 
+  set_engine("kernlab") %>% 
+  set_mode("regression") %>% 
+  fit(Petal.Width ~ Sepal.Width + Sepal.Length, data = iris)
+
+x_min <- min(X$Sepal.Width) - margin
+x_max <- max(X$Sepal.Width) - margin
+y_min <- min(X$Sepal.Length) - margin
+y_max <- max(X$Sepal.Length) - margin
+xrange <- seq(x_min, x_max, mesh_size)
+yrange <- seq(y_min, y_max, mesh_size)
+xy <- meshgrid(x = xrange, y = yrange)
+xx <- xy$X
+yy <- xy$Y
+dim_val <- dim(xx)
+xx1 <- matrix(xx, length(xx), 1)
+yy1 <- matrix(yy, length(yy), 1)
+final <- cbind(xx1, yy1)
+pred <- model %>%
+  predict(final)
+
+pred <- pred$.pred
+pred <- matrix(pred, dim_val[1], dim_val[2])
+
+fig <- plot_ly(iris, x = ~Sepal.Width, y = ~Sepal.Length, z = ~Petal.Width ) %>% 
+  add_markers(size = 5) %>% 
+  add_surface(x=xrange, y=yrange, z=pred, alpha = 0.65, type = 'mesh3d', name = 'pred_surface')
+fig
+```
+```{r}
+library(reshape2)
+library(tidyverse)
+library(tidymodels)
+library(plotly)
+library(kernlab)
+library(pracma) #For meshgrid()
+data(iris)
+
+mesh_size <- .02
+margin <- 0
+X <- iris %>% select(Sepal.Width, Sepal.Length)
+
+y <- iris %>% select(Petal.Width)
+
+model <- svm_rbf(cost = 1.0) %>% 
+  set_engine("kernlab") %>% 
+  set_mode("regression") %>% 
+  fit(Petal.Width ~ Sepal.Width + Sepal.Length, data = iris)
+
+x_min <- min(X$Sepal.Width) - margin
+x_max <- max(X$Sepal.Width) - margin
+y_min <- min(X$Sepal.Length) - margin
+y_max <- max(X$Sepal.Length) - margin
+xrange <- seq(x_min, x_max, mesh_size)
+yrange <- seq(y_min, y_max, mesh_size)
+xy <- meshgrid(x = xrange, y = yrange)
+xx <- xy$X
+yy <- xy$Y
+dim_val <- dim(xx)
+xx1 <- matrix(xx, length(xx), 1)
+yy1 <- matrix(yy, length(yy), 1)
+final <- cbind(xx1, yy1)
+pred <- model %>%
+  predict(final)
+
+pred <- pred$.pred
+pred <- matrix(pred, dim_val[1], dim_val[2])
+
+fig <- plot_ly(iris, x = ~Sepal.Width, y = ~Sepal.Length, z = ~Petal.Width ) %>% 
+  add_markers(size = 5) %>% 
+  add_surface(x=xrange, y=yrange, z=pred, alpha = 0.65, type = 'mesh3d', name = 'pred_surface')
+fig
+```
+## ROC and PR Curves
+### ROC and PR Curves
+```r
+library(plotly)
+library(tidymodels)
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+data <- data.frame(X,y)
+data$y <- as.factor(data$y)
+X <- subset(data,select = -c(y))
+logistic_glm <-
+  logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  fit(y ~ ., data = data)
+
+y_scores <- logistic_glm %>%
+  predict(X, type = 'prob')
+
+y_score <- y_scores$.pred_1
+db <- data.frame(data$y, y_score)
+
+z <- roc_curve(data = db, 'data.y', 'y_score')
+z$specificity <- 1 - z$specificity
+colnames(z) <- c('threshold', 'tpr', 'fpr')
+
+fig1 <- plot_ly(x= y_score, color = data$y, colors = c('blue', 'red'), type = 'histogram', alpha = 0.5, nbinsx = 50) %>%
+  layout(barmode = "overlay")
+fig1
+```
+```{r}
+library(plotly)
+library(tidymodels)
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+data <- data.frame(X,y)
+data$y <- as.factor(data$y)
+X <- subset(data,select = -c(y))
+logistic_glm <-
+  logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  fit(y ~ ., data = data)
+
+y_scores <- logistic_glm %>%
+  predict(X, type = 'prob')
+
+y_score <- y_scores$.pred_1
+db <- data.frame(data$y, y_score)
+
+z <- roc_curve(data = db, 'data.y', 'y_score')
+z$specificity <- 1 - z$specificity
+colnames(z) <- c('threshold', 'tpr', 'fpr')
+
+fig1 <- plot_ly(x= y_score, color = data$y, colors = c('blue', 'red'), type = 'histogram', alpha = 0.5, nbinsx = 50) %>%
+  layout(barmode = "overlay")
+fig1
+```
+```r
+fig2 <- plot_ly(data = z, x = ~threshold) %>%
+  add_trace(y = ~fpr, mode = 'lines', name = 'False Positive Rate', type = 'scatter')%>%
+  add_trace(y = ~tpr, mode = 'lines', name = 'True Positive Rate', type = 'scatter')%>%
+  layout(title = 'TPR and FPR at every threshold')
+fig2 <- fig2 %>% layout(legend=list(title=list(text='<b> Rate </b>')))
+fig2
+```
+```{r}
+fig2 <- plot_ly(data = z, x = ~threshold) %>%
+  add_trace(y = ~fpr, mode = 'lines', name = 'False Positive Rate', type = 'scatter')%>%
+  add_trace(y = ~tpr, mode = 'lines', name = 'True Positive Rate', type = 'scatter')%>%
+  layout(title = 'TPR and FPR at every threshold')
+fig2 <- fig2 %>% layout(legend=list(title=list(text='<b> Rate </b>')))
+fig2
+```
+
+### Basic binary ROC curve
+```r
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(pROC)
+
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+db <- data.frame(X,y)
+db$y <- as.factor(db$y)
+test_data = db[1:20]
+
+model<- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  # Fit the model
+  fit(y ~., data = db)
+
+
+ypred <- predict(model,
+                  new_data = test_data,
+                  type = "prob")
+
+yscore <- data.frame(ypred$.pred_0)
+rdb <- cbind(db$y,yscore)
+colnames(rdb) = c('y','yscore')
+
+
+pdb <- roc_curve(rdb, y, yscore)
+pdb$specificity <- 1 - pdb$specificity
+auc = roc_auc(rdb, y, yscore)
+auc = auc$.estimate
+
+tit = paste('ROC Curve (AUC = ',toString(round(auc,2)),')',sep = '')
+
+
+fig <-  plot_ly(data = pdb ,x =  ~specificity, y = ~sensitivity, type = 'scatter', mode = 'lines', fill = 'tozeroy') %>%
+  layout(title = tit,xaxis = list(title = "False Positive Rate"), yaxis = list(title = "True Positive Rate")) %>%
+add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'),inherit = FALSE, showlegend = FALSE)
+fig
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(pROC)
+
+set.seed(0)
+X <- matrix(rnorm(10000),nrow=500)
+y <- sample(0:1, 500, replace=TRUE)
+db <- data.frame(X,y)
+db$y <- as.factor(db$y)
+test_data = db[1:20]
+
+model<- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification") %>%
+  # Fit the model
+  fit(y ~., data = db)
+
+
+ypred <- predict(model,
+                  new_data = test_data,
+                  type = "prob")
+
+yscore <- data.frame(ypred$.pred_0)
+rdb <- cbind(db$y,yscore)
+colnames(rdb) = c('y','yscore')
+
+
+pdb <- roc_curve(rdb, y, yscore)
+pdb$specificity <- 1 - pdb$specificity
+auc = roc_auc(rdb, y, yscore)
+auc = auc$.estimate
+
+tit = paste('ROC Curve (AUC = ',toString(round(auc,2)),')',sep = '')
+
+
+fig <-  plot_ly(data = pdb ,x =  ~specificity, y = ~sensitivity, type = 'scatter', mode = 'lines', fill = 'tozeroy') %>%
+  layout(title = tit,xaxis = list(title = "False Positive Rate"), yaxis = list(title = "True Positive Rate")) %>%
+add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'),inherit = FALSE, showlegend = FALSE)
+fig
+
+```
+### Multiclass ROC Curve
+```r
+library(plotly)
+library(tidymodels)
+library(fastDummies)
+
+# Artificially add noise to make task harder
+data(iris)
+ind <- sample.int(150, 50)
+samples <- sample(x = iris$Species, size = 50)
+iris[ind,'Species'] = samples
+
+# Define the inputs and outputs
+X <- subset(iris, select = -c(Species))
+iris$Species <- as.factor(iris$Species)
+
+# Fit the model
+logistic <-
+  multinom_reg() %>%
+  set_engine("nnet") %>%
+  set_mode("classification") %>%
+  fit(Species ~ ., data = iris)
+
+y_scores <- logistic %>%
+  predict(X, type = 'prob')
+
+# One hot encode the labels in order to plot them
+y_onehot <- dummy_cols(iris$Species)
+colnames(y_onehot) <- c('drop', 'setosa', 'versicolor', 'virginica')
+y_onehot <- subset(y_onehot, select = -c(drop))
+
+z = cbind(y_scores, y_onehot)
+
+z$setosa <- as.factor(z$setosa)
+roc_setosa <- roc_curve(data = z, setosa, .pred_setosa)
+roc_setosa$specificity <- 1 - roc_setosa$specificity
+colnames(roc_setosa) <- c('threshold', 'tpr', 'fpr')
+auc_setosa <- roc_auc(data = z, setosa, .pred_setosa)
+auc_setosa <- auc_setosa$.estimate
+setosa <- paste('setosa (AUC=',toString(round(1-auc_setosa,2)),')',sep = '')
+
+z$versicolor <- as.factor(z$versicolor)
+roc_versicolor <- roc_curve(data = z, versicolor, .pred_versicolor)
+roc_versicolor$specificity <- 1 - roc_versicolor$specificity
+colnames(roc_versicolor) <- c('threshold', 'tpr', 'fpr')
+auc_versicolor <- roc_auc(data = z, versicolor, .pred_versicolor)
+auc_versicolor <- auc_versicolor$.estimate
+versicolor <- paste('versicolor (AUC=',toString(round(1-auc_versicolor,2)),')', sep = '')
+
+z$virginica <- as.factor(z$virginica)
+roc_virginica <- roc_curve(data = z, virginica, .pred_virginica)
+roc_virginica$specificity <- 1 - roc_virginica$specificity
+colnames(roc_virginica) <- c('threshold', 'tpr', 'fpr')
+auc_virginica <- roc_auc(data = z, virginica, .pred_virginica)
+auc_virginica <- auc_virginica$.estimate
+virginica <- paste('virginica (AUC=',toString(round(1-auc_virginica,2)),')',sep = '')
+
+# Create an empty figure, and iteratively add a line for each class
+fig <- plot_ly()%>%
+  add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'), showlegend = FALSE) %>%
+  add_trace(data = roc_setosa,x = ~fpr, y = ~tpr, mode = 'lines', name = setosa, type = 'scatter')%>%
+  add_trace(data = roc_versicolor,x = ~fpr, y = ~tpr, mode = 'lines', name = versicolor, type = 'scatter')%>%
+  add_trace(data = roc_virginica,x = ~fpr, y = ~tpr, mode = 'lines', name = virginica, type = 'scatter')%>%
+  layout(xaxis = list(
+    title = "False Positive Rate"
+  ), yaxis = list(
+    title = "True Positive Rate"
+  ),legend = list(x = 100, y = 0.5))
+fig
+
+```
+```{r}
+library(plotly)
+library(tidymodels)
+library(fastDummies)
+
+# Artificially add noise to make task harder
+data(iris)
+ind <- sample.int(150, 50)
+samples <- sample(x = iris$Species, size = 50)
+iris[ind,'Species'] = samples
+
+# Define the inputs and outputs
+X <- subset(iris, select = -c(Species))
+iris$Species <- as.factor(iris$Species)
+
+# Fit the model
+logistic <-
+  multinom_reg() %>%
+  set_engine("nnet") %>%
+  set_mode("classification") %>%
+  fit(Species ~ ., data = iris)
+
+y_scores <- logistic %>%
+  predict(X, type = 'prob')
+
+# One hot encode the labels in order to plot them
+y_onehot <- dummy_cols(iris$Species)
+colnames(y_onehot) <- c('drop', 'setosa', 'versicolor', 'virginica')
+y_onehot <- subset(y_onehot, select = -c(drop))
+
+z = cbind(y_scores, y_onehot)
+
+z$setosa <- as.factor(z$setosa)
+roc_setosa <- roc_curve(data = z, setosa, .pred_setosa)
+roc_setosa$specificity <- 1 - roc_setosa$specificity
+colnames(roc_setosa) <- c('threshold', 'tpr', 'fpr')
+auc_setosa <- roc_auc(data = z, setosa, .pred_setosa)
+auc_setosa <- auc_setosa$.estimate
+setosa <- paste('setosa (AUC=',toString(round(1-auc_setosa,2)),')',sep = '')
+
+z$versicolor <- as.factor(z$versicolor)
+roc_versicolor <- roc_curve(data = z, versicolor, .pred_versicolor)
+roc_versicolor$specificity <- 1 - roc_versicolor$specificity
+colnames(roc_versicolor) <- c('threshold', 'tpr', 'fpr')
+auc_versicolor <- roc_auc(data = z, versicolor, .pred_versicolor)
+auc_versicolor <- auc_versicolor$.estimate
+versicolor <- paste('versicolor (AUC=',toString(round(1-auc_versicolor,2)),')', sep = '')
+
+z$virginica <- as.factor(z$virginica)
+roc_virginica <- roc_curve(data = z, virginica, .pred_virginica)
+roc_virginica$specificity <- 1 - roc_virginica$specificity
+colnames(roc_virginica) <- c('threshold', 'tpr', 'fpr')
+auc_virginica <- roc_auc(data = z, virginica, .pred_virginica)
+auc_virginica <- auc_virginica$.estimate
+virginica <- paste('virginica (AUC=',toString(round(1-auc_virginica,2)),')',sep = '')
+
+# Create an empty figure, and iteratively add a line for each class
+fig <- plot_ly()%>%
+  add_segments(x = 0, xend = 1, y = 0, yend = 1, line = list(dash = "dash", color = 'black'), showlegend = FALSE) %>%
+  add_trace(data = roc_setosa,x = ~fpr, y = ~tpr, mode = 'lines', name = setosa, type = 'scatter')%>%
+  add_trace(data = roc_versicolor,x = ~fpr, y = ~tpr, mode = 'lines', name = versicolor, type = 'scatter')%>%
+  add_trace(data = roc_virginica,x = ~fpr, y = ~tpr, mode = 'lines', name = virginica, type = 'scatter')%>%
+  layout(xaxis = list(
+    title = "False Positive Rate"
+  ), yaxis = list(
+    title = "True Positive Rate"
+  ),legend = list(x = 100, y = 0.5))
+fig
+
+```
+
+## PCA Visulization
+### Visualize all the original dimensions
+```r
+library(plotly)
+
+data(iris)
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+
+fig <- iris %>%
+  plot_ly()
+fig <- fig %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='sepal length', values=~Sepal.Length),
+      list(label='sepal width', values=~Sepal.Width),
+      list(label='petal length', values=~Petal.Length),
+      list(label='petal width', values=~Petal.Width)
+    ),
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') ,
+    marker = list(
+      size = 7,
+      line = list(
+        width = 1,
+        color = 'rgb(230,230,230)'
+      )
+    )
+  )
+fig <-  fig %>% style(diagonal = list(visible = FALSE))
+fig <- fig %>%
+  layout(
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+
+data(iris)
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+
+fig <- iris %>%
+  plot_ly()
+fig <- fig %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='sepal length', values=~Sepal.Length),
+      list(label='sepal width', values=~Sepal.Width),
+      list(label='petal length', values=~Petal.Length),
+      list(label='petal width', values=~Petal.Width)
+    ),
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') ,
+    marker = list(
+      size = 7,
+      line = list(
+        width = 1,
+        color = 'rgb(230,230,230)'
+      )
+    )
+  )
+fig <-  fig %>% style(diagonal = list(visible = FALSE))
+fig <- fig %>%
+  layout(
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+
+### Visualize all the principal components
+```r
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X)
+explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+explained_variance_ratio <- 100 * explained_variance_ratio
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC3 <- -components$PC3
+components$PC2 <- -components$PC2
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+fig <- components %>%
+  plot_ly()  %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label=paste('PC 1 (',toString(round(explained_variance_ratio[1],1)),'%)',sep = ''), values=~PC1),
+      list(label=paste('PC 2 (',toString(round(explained_variance_ratio[2],1)),'%)',sep = ''), values=~PC2),
+      list(label=paste('PC 3 (',toString(round(explained_variance_ratio[3],1)),'%)',sep = ''), values=~PC3),
+      list(label=paste('PC 4 (',toString(round(explained_variance_ratio[4],1)),'%)',sep = ''), values=~PC4)
+    ),
+    color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')
+  ) %>%
+  style(diagonal = list(visible = FALSE)) %>%
+  layout(
+    legend=list(title=list(text='color')),
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X)
+explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+explained_variance_ratio <- 100 * explained_variance_ratio
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC3 <- -components$PC3
+components$PC2 <- -components$PC2
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+fig <- components %>%
+  plot_ly()  %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label=paste('PC 1 (',toString(round(explained_variance_ratio[1],1)),'%)',sep = ''), values=~PC1),
+      list(label=paste('PC 2 (',toString(round(explained_variance_ratio[2],1)),'%)',sep = ''), values=~PC2),
+      list(label=paste('PC 3 (',toString(round(explained_variance_ratio[3],1)),'%)',sep = ''), values=~PC3),
+      list(label=paste('PC 4 (',toString(round(explained_variance_ratio[4],1)),'%)',sep = ''), values=~PC4)
+    ),
+    color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')
+  ) %>%
+  style(diagonal = list(visible = FALSE)) %>%
+  layout(
+    legend=list(title=list(text='color')),
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+
+```
+### Visualize a subset of the principal components
+```r
+library(plotly)
+library(stats)
+library(MASS)
+
+db = Boston
+
+prin_comp <- prcomp(db, rank. = 4)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, db$medv)
+components$PC2 <- -components$PC2
+colnames(components)[5] = 'Median_Price'
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.56'
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4)
+
+fig <- components %>%
+  plot_ly() %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='PC1', values=~PC1),
+      list(label='PC2', values=~PC2),
+      list(label='PC3', values=~PC3),
+      list(label='PC4', values=~PC4)
+    ),
+    color=~Median_Price,
+    marker = list(
+      size = 7
+    )
+  ) %>% style(diagonal = list(visible = F)) %>%
+  layout(
+    title= tit,
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+options(warn=-1)
+fig
+
+```
+```{r}
+library(plotly)
+library(stats)
+library(MASS)
+
+db = Boston
+
+prin_comp <- prcomp(db, rank. = 4)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, db$medv)
+components$PC2 <- -components$PC2
+colnames(components)[5] = 'Median_Price'
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.56'
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4)
+
+fig <- components %>%
+  plot_ly() %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='PC1', values=~PC1),
+      list(label='PC2', values=~PC2),
+      list(label='PC3', values=~PC3),
+      list(label='PC4', values=~PC4)
+    ),
+    color=~Median_Price,
+    marker = list(
+      size = 7
+    )
+  ) %>% style(diagonal = list(visible = F)) %>%
+  layout(
+    title= tit,
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+options(warn=-1)
+fig
+
+```
+### Visualize PCA with scatter3d
+```r
+data("iris")
+
+X <- subset(iris, select = -c(Species))
+
+prin_comp <- prcomp(X, rank. = 3)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components$PC2 <- -components$PC2
+components$PC3 <- -components$PC3
+components = cbind(components, iris$Species)
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.48'
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, z = ~PC3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>%
+  add_markers(size = 12)
+
+
+fig <- fig %>%
+  layout(
+    title = tit,
+    scene = list(bgcolor = "#e5ecf6")
+)
+
+fig
+
+```
+```{r}
+data("iris")
+
+X <- subset(iris, select = -c(Species))
+
+prin_comp <- prcomp(X, rank. = 3)
+
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components$PC2 <- -components$PC2
+components$PC3 <- -components$PC3
+components = cbind(components, iris$Species)
+
+tot_explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+tot_explained_variance_ratio <- 100 * sum(tot_explained_variance_ratio)
+
+tit = 'Total Explained Variance = 99.48'
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, z = ~PC3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>%
+  add_markers(size = 12)
+
+
+fig <- fig %>%
+  layout(
+    title = tit,
+    scene = list(bgcolor = "#e5ecf6")
+)
+
+fig
+
+```
+### Visualize Loadings
+```r
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X, rank = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC2 <- -components$PC2
+explained_variance <- summary(prin_comp)[["sdev"]]
+explained_variance <- explained_variance[1:2]
+comp <- prin_comp[["rotation"]]
+comp[,'PC2'] <- - comp[,'PC2']
+loadings <- comp
+for (i in seq(explained_variance)){
+  loadings[,i] <- comp[,i] * explained_variance[i]
+}
+
+features = c('sepal_length', 'sepal_width', 'petal_length', 'petal_width')
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers') %>%
+  layout(
+    legend=list(title=list(text='color')),
+    plot_bgcolor = "#e5ecf6",
+    xaxis = list(
+      title = "0"),
+    yaxis = list(
+      title = "1"))
+for (i in seq(4)){
+  fig <- fig %>%
+    add_segments(x = 0, xend = loadings[i, 1], y = 0, yend = loadings[i, 2], line = list(color = 'black'),inherit = FALSE, showlegend = FALSE) %>%
+    add_annotations(x=loadings[i, 1], y=loadings[i, 2], ax = 0, ay = 0,text = features[i], xanchor = 'center', yanchor= 'bottom')
+}
+
+fig
+
+```
+
+```{r}
+library(plotly)
+library(stats)
+data(iris)
+X <- subset(iris, select = -c(Species))
+prin_comp <- prcomp(X, rank = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, iris$Species)
+components$PC2 <- -components$PC2
+explained_variance <- summary(prin_comp)[["sdev"]]
+explained_variance <- explained_variance[1:2]
+comp <- prin_comp[["rotation"]]
+comp[,'PC2'] <- - comp[,'PC2']
+loadings <- comp
+for (i in seq(explained_variance)){
+  loadings[,i] <- comp[,i] * explained_variance[i]
+}
+
+features = c('sepal_length', 'sepal_width', 'petal_length', 'petal_width')
+
+fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers') %>%
+  layout(
+    legend=list(title=list(text='color')),
+    plot_bgcolor = "#e5ecf6",
+    xaxis = list(
+      title = "0"),
+    yaxis = list(
+      title = "1"))
+for (i in seq(4)){
+  fig <- fig %>%
+    add_segments(x = 0, xend = loadings[i, 1], y = 0, yend = loadings[i, 2], line = list(color = 'black'),inherit = FALSE, showlegend = FALSE) %>%
+    add_annotations(x=loadings[i, 1], y=loadings[i, 2], ax = 0, ay = 0,text = features[i], xanchor = 'center', yanchor= 'bottom')
+}
+
+fig
+
+```
+## t-SNE and UMAP projections
+### Basic t-SNE projections
+```r
+library(plotly) 
+library(stats) 
+data(iris) 
+X <- subset(iris, select = -c(Species)) 
+axis = list(showline=FALSE, 
+            zeroline=FALSE, 
+            gridcolor='#ffff', 
+            ticklen=4)
+fig <- iris %>%  
+  plot_ly()  %>%  
+  add_trace(  
+    type = 'splom',  
+    dimensions = list( 
+      list(label = 'sepal_width',values=~Sepal.Width),  
+      list(label = 'sepal_length',values=~Sepal.Length),  
+      list(label ='petal_width',values=~Petal.Width),  
+      list(label = 'petal_length',values=~Petal.Length)),  
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') 
+  ) 
+fig <- fig %>% 
+  layout( 
+    legend=list(title=list(text='species')), 
+    hovermode='closest', 
+    dragmode= 'select', 
+    plot_bgcolor='rgba(240,240,240,0.95)', 
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    xaxis2=axis, 
+    xaxis3=axis, 
+    xaxis4=axis, 
+    yaxis2=axis, 
+    yaxis3=axis, 
+    yaxis4=axis 
+  ) 
+fig
+
+```
+```{r}
+library(plotly) 
+library(stats) 
+data(iris) 
+X <- subset(iris, select = -c(Species)) 
+axis = list(showline=FALSE, 
+            zeroline=FALSE, 
+            gridcolor='#ffff', 
+            ticklen=4)
+fig <- iris %>%  
+  plot_ly()  %>%  
+  add_trace(  
+    type = 'splom',  
+    dimensions = list( 
+      list(label = 'sepal_width',values=~Sepal.Width),  
+      list(label = 'sepal_length',values=~Sepal.Length),  
+      list(label ='petal_width',values=~Petal.Width),  
+      list(label = 'petal_length',values=~Petal.Length)),  
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') 
+  ) 
+fig <- fig %>% 
+  layout( 
+    legend=list(title=list(text='species')), 
+    hovermode='closest', 
+    dragmode= 'select', 
+    plot_bgcolor='rgba(240,240,240,0.95)', 
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4), 
+    xaxis2=axis, 
+    xaxis3=axis, 
+    xaxis4=axis, 
+    yaxis2=axis, 
+    yaxis3=axis, 
+    yaxis4=axis 
+  ) 
+fig
+
+```
+### Project data into 2D with t-SNE
+```r
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+set.seed(0)
+tsne <- tsne(features, initial_dims = 2)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, type = 'scatter', mode = 'markers', split = ~iris$Species)
+
+fig <- fig %>%
+  layout(
+    plot_bgcolor = "#e5ecf6"
+  )
+
+fig
+
+```
+```{r}
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+set.seed(0)
+tsne <- tsne(features, initial_dims = 2)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, type = 'scatter', mode = 'markers', split = ~iris$Species)
+
+fig <- fig %>%
+  layout(
+    plot_bgcolor = "#e5ecf6"
+  )
+
+fig
+
+
+```
+### Project data into 3D with t-SNE
+```r
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+#set.seed(0)
+tsne <- tsne(features, initial_dims = 3, k =3)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>% 
+  add_markers(size = 8) %>%
+  layout( 
+    xaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'), 
+    yaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'),
+    scene =list(bgcolor = "#e5ecf6"))
+fig
+
+```
+```{r}
+library(tsne)
+library(plotly)
+data("iris")
+
+features <- subset(iris, select = -c(Species)) 
+
+#set.seed(0)
+tsne <- tsne(features, initial_dims = 3, k =3)
+tsne <- data.frame(tsne)
+pdb <- cbind(tsne,iris$Species)
+options(warn = -1)
+fig <-  plot_ly(data = pdb ,x =  ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96') ) %>% 
+  add_markers(size = 8) %>%
+  layout( 
+    xaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'), 
+    yaxis = list(
+      zerolinecolor = "#ffff",
+      zerolinewidth = 2,
+      gridcolor='#ffff'),
+    scene =list(bgcolor = "#e5ecf6"))
+fig
+
+```
+### Projections with UMAP
+```r
+library(plotly) 
+library(umap) 
+iris.data = iris[, grep("Sepal|Petal", colnames(iris))] 
+iris.labels = iris[, "Species"] 
+iris.umap = umap(iris.data, n_components = 2, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers')%>%  
+  layout(
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='species')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+
+iris.umap = umap(iris.data, n_components = 3, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig2 <- plot_ly(final, x = ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')) 
+fig2 <- fig2 %>% add_markers() 
+fig2 <- fig2 %>% layout(scene = list(xaxis = list(title = '0'), 
+                                     yaxis = list(title = '1'), 
+                                     zaxis = list(title = '2'))) 
+
+fig 
+
+```
+```{r}
+library(plotly) 
+library(umap) 
+iris.data = iris[, grep("Sepal|Petal", colnames(iris))] 
+iris.labels = iris[, "Species"] 
+iris.umap = umap(iris.data, n_components = 2, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'), type = 'scatter', mode = 'markers')%>%  
+  layout(
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='species')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+
+iris.umap = umap(iris.data, n_components = 3, random_state = 15) 
+layout <- iris.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, iris$Species) 
+
+fig2 <- plot_ly(final, x = ~X1, y = ~X2, z = ~X3, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96')) 
+fig2 <- fig2 %>% add_markers() 
+fig2 <- fig2 %>% layout(scene = list(xaxis = list(title = '0'), 
+                                     yaxis = list(title = '1'), 
+                                     zaxis = list(title = '2'))) 
+
+fig 
+
+```
+```r
+fig2
+```
+```{r}
+fig2
+```
+### Visualizing image datasets
+```r
+library(rsvd) 
+library(plotly) 
+library(umap) 
+data('digits') 
+digits.data = digits[, grep("pixel", colnames(digits))] 
+digits.labels = digits[, "label"] 
+digits.umap = umap(digits.data, n_components = 2, k = 10) 
+layout <- digits.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, digits[,'label']) 
+colnames(final) <- c('X1', 'X2', 'label') 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, split = ~label,  type = 'scatter', mode = 'markers')%>%  
+  layout(  
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='digit')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+fig
+
+```
+```{r}
+library(rsvd) 
+library(plotly) 
+library(umap) 
+data('digits') 
+digits.data = digits[, grep("pixel", colnames(digits))] 
+digits.labels = digits[, "label"] 
+digits.umap = umap(digits.data, n_components = 2, k = 10) 
+layout <- digits.umap[["layout"]] 
+layout <- data.frame(layout) 
+final <- cbind(layout, digits[,'label']) 
+colnames(final) <- c('X1', 'X2', 'label') 
+
+fig <- plot_ly(final, x = ~X1, y = ~X2, split = ~label,  type = 'scatter', mode = 'markers')%>%  
+  layout(  
+    plot_bgcolor = "#e5ecf6",
+    legend=list(title=list(text='digit')), 
+    xaxis = list( 
+      title = "0"),  
+    yaxis = list( 
+      title = "1")) 
+fig
+
+```
+
+
+<!--chapter:end:ml.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# 3D Charts
+### Basic 3D Scatter Plot
+```r
+library(plotly)
+
+mtcars$am[which(mtcars$am == 0)] <- 'Automatic'
+mtcars$am[which(mtcars$am == 1)] <- 'Manual'
+mtcars$am <- as.factor(mtcars$am)
+
+fig <- plot_ly(mtcars, x = ~wt, y = ~hp, z = ~qsec, color = ~am, colors = c('pink', 'blue'))
+fig <- fig %>% add_markers(size = 10)
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Weight'),
+                     yaxis = list(title = 'Gross horsepower'),
+                     zaxis = list(title = '1/4 mile time')))
+
+fig
+```
+
+```{r}
+library(plotly)
+
+mtcars$am[which(mtcars$am == 0)] <- 'Automatic'
+mtcars$am[which(mtcars$am == 1)] <- 'Manual'
+mtcars$am <- as.factor(mtcars$am)
+
+fig <- plot_ly(mtcars, x = ~wt, y = ~hp, z = ~qsec, color = ~am, colors = c('pink', 'blue'))
+fig <- fig %>% add_markers(size = 10)
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Weight'),
+                     yaxis = list(title = 'Gross horsepower'),
+                     zaxis = list(title = '1/4 mile time')))
+
+fig
+```
+
+### Basic 3D Surface Plot
+```r
+# volcano is a numeric matrix that ships with R
+fig <- plot_ly(z = ~volcano)
+fig <- fig %>% add_surface()
+
+fig
+```
+
+```{r}
+# volcano is a numeric matrix that ships with R
+fig <- plot_ly(z = ~volcano)
+fig <- fig %>% add_surface()
+
+fig
+```
+
+
+<!--chapter:end:3d.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Transforms
+## Filter
+### Basic Example
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = rownames(mtcars),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'filter',
+      target = 'y',
+      operation = '>',
+      value = mean(mtcars$qsec)
+    )
+  )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = rownames(mtcars),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'filter',
+      target = 'y',
+      operation = '>',
+      value = mean(mtcars$qsec)
+    )
+  )
+)
+
+fig
+```
+
+
+## Group
+### Basic Example
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = paste("Make: ", rownames(mtcars),
+               "<br>hp: ", mtcars$hp,
+               "<br>qsec: ", mtcars$qsec,
+               "<br>Cyl: ", mtcars$cyl),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'groupby',
+      groups = mtcars$cyl,
+      styles = list(
+        list(target = 4, value = list(marker =list(color = 'blue'))),
+        list(target = 6, value = list(marker =list(color = 'red'))),
+        list(target = 8, value = list(marker =list(color = 'black')))
+      )
+      )
+    )
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = mtcars$hp,
+  y = mtcars$qsec,
+  text = paste("Make: ", rownames(mtcars),
+               "<br>hp: ", mtcars$hp,
+               "<br>qsec: ", mtcars$qsec,
+               "<br>Cyl: ", mtcars$cyl),
+  hoverinfo = 'text',
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'groupby',
+      groups = mtcars$cyl,
+      styles = list(
+        list(target = 4, value = list(marker =list(color = 'blue'))),
+        list(target = 6, value = list(marker =list(color = 'red'))),
+        list(target = 8, value = list(marker =list(color = 'black')))
+      )
+      )
+    )
+  )
+
+fig
+```
+
+
+## Aggregation
+### Basic Example
+```r
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = diamonds$cut,
+  y = diamonds$price,
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'aggregate',
+      groups = diamonds$cut,
+      aggregations = list(
+        list(
+          target = 'y', func = 'sum', enabled = T
+        )
+      )
+    )
+  )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+fig <- plot_ly(
+  type = 'scatter',
+  x = diamonds$cut,
+  y = diamonds$price,
+  mode = 'markers',
+  transforms = list(
+    list(
+      type = 'aggregate',
+      groups = diamonds$cut,
+      aggregations = list(
+        list(
+          target = 'y', func = 'sum', enabled = T
+        )
+      )
+    )
+  )
+)
+
+fig
+```
+### Histogram Binning
+```r
+library(plotly)
+
+df <- read.csv("https://plotly.com/~public.health/17.csv", skipNul = TRUE, encoding = "UTF-8")
+
+labels <- function(size, label) {
+  list(
+    args = c("xbins.size", size), 
+    label = label, 
+    method = "restyle"
+  )
+}
+
+fig <- df %>%
+  plot_ly(
+    x = ~date,
+    autobinx = FALSE, 
+    autobiny = TRUE, 
+    marker = list(color = "rgb(68, 68, 68)"), 
+    name = "date", 
+    type = "histogram", 
+    xbins = list(
+      end = "2016-12-31 12:00", 
+      size = "M1", 
+      start = "1983-12-31 12:00"
+    )
+  )
+fig <- fig %>% layout(
+  paper_bgcolor = "rgb(240, 240, 240)", 
+  plot_bgcolor = "rgb(240, 240, 240)", 
+  title = "<b>Shooting Incidents</b><br>use dropdown to change bin size",
+  xaxis = list(
+    type = 'date'
+  ),
+  yaxis = list(
+    title = "Incidents"
+  ),
+  updatemenus = list(
+    list(
+      x = 0.1, 
+      y = 1.15,
+      active = 1, 
+      showactive = TRUE,
+      buttons = list(
+        labels("D1", "Day"),
+        labels("M1", "Month"),
+        labels("M6", "Half Year"),
+        labels("M12", "Year")
+      )
+    )
+  )
+)
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://plotly.com/~public.health/17.csv", skipNul = TRUE, encoding = "UTF-8")
+
+labels <- function(size, label) {
+  list(
+    args = c("xbins.size", size), 
+    label = label, 
+    method = "restyle"
+  )
+}
+
+fig <- df %>%
+  plot_ly(
+    x = ~date,
+    autobinx = FALSE, 
+    autobiny = TRUE, 
+    marker = list(color = "rgb(68, 68, 68)"), 
+    name = "date", 
+    type = "histogram", 
+    xbins = list(
+      end = "2016-12-31 12:00", 
+      size = "M1", 
+      start = "1983-12-31 12:00"
+    )
+  )
+fig <- fig %>% layout(
+  paper_bgcolor = "rgb(240, 240, 240)", 
+  plot_bgcolor = "rgb(240, 240, 240)", 
+  title = "<b>Shooting Incidents</b><br>use dropdown to change bin size",
+  xaxis = list(
+    type = 'date'
+  ),
+  yaxis = list(
+    title = "Incidents"
+  ),
+  updatemenus = list(
+    list(
+      x = 0.1, 
+      y = 1.15,
+      active = 1, 
+      showactive = TRUE,
+      buttons = list(
+        labels("D1", "Day"),
+        labels("M1", "Month"),
+        labels("M6", "Half Year"),
+        labels("M12", "Year")
+      )
+    )
+  )
+)
+
+fig
+```
+### Mapping with Aggregations
+```r
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/worldhappiness.csv")
+
+s <- schema()
+agg <- s$transforms$aggregate$attributes$aggregations$items$aggregation$func$values
+
+
+l = list()
+for (i in 1:length(agg)) {
+  ll = list(method = "restyle",
+            args = list('transforms[0].aggregations[0].func', agg[i]),
+            label = agg[i]) 
+  l[[i]] = ll
+}
+
+fig <- df %>%
+  plot_ly(
+    type = 'choropleth',
+    locationmode = 'country names',
+    locations = ~Country,
+    z = ~HappinessScore,
+    autocolorscale = F,
+    reversescale = T,
+    colorscale = 'Portland', 
+    transforms = list(list(
+      type = 'aggregate',
+      groups = ~Country,
+      aggregations = list(
+        list(target = 'z', func = 'sum', enabled = T)
+      )
+    ))
+  )
+fig <- fig %>% layout(
+    title = "<b>World Happiness</b>",
+    geo = list(
+      showframe = F,
+      showcoastlines = F
+    ),
+    updatemenus = list(
+      list(
+        x = 0.25,
+        y = 1.04,
+        xref = 'paper',
+        yref = 'paper',
+        yanchor = 'top',
+        buttons = l
+      )
+    )
+  )
+
+fig
+```
+```{r}
+library(plotly)
+
+df <- read.csv("https://raw.githubusercontent.com/bcdunbar/datasets/master/worldhappiness.csv")
+
+s <- schema()
+agg <- s$transforms$aggregate$attributes$aggregations$items$aggregation$func$values
+
+
+l = list()
+for (i in 1:length(agg)) {
+  ll = list(method = "restyle",
+            args = list('transforms[0].aggregations[0].func', agg[i]),
+            label = agg[i]) 
+  l[[i]] = ll
+}
+
+fig <- df %>%
+  plot_ly(
+    type = 'choropleth',
+    locationmode = 'country names',
+    locations = ~Country,
+    z = ~HappinessScore,
+    autocolorscale = F,
+    reversescale = T,
+    colorscale = 'Portland', 
+    transforms = list(list(
+      type = 'aggregate',
+      groups = ~Country,
+      aggregations = list(
+        list(target = 'z', func = 'sum', enabled = T)
+      )
+    ))
+  )
+fig <- fig %>% layout(
+    title = "<b>World Happiness</b>",
+    geo = list(
+      showframe = F,
+      showcoastlines = F
+    ),
+    updatemenus = list(
+      list(
+        x = 0.25,
+        y = 1.04,
+        xref = 'paper',
+        yref = 'paper',
+        yanchor = 'top',
+        buttons = l
+      )
+    )
+  )
+
+fig
+```
+
+
+<!--chapter:end:transform.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Animations
+## Intro to animations
+### Basic Example
+```r
+library(plotly)
+
+df <- data.frame(
+  x = c(1,2,1), 
+  y = c(1,2,1), 
+  f = c(1,2,3)
+)
+
+fig <- df %>%
+  plot_ly(
+    x = ~x,
+    y = ~y,
+    frame = ~f,
+    type = 'scatter',
+    mode = 'markers',
+    showlegend = F
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+
+df <- data.frame(
+  x = c(1,2,1), 
+  y = c(1,2,1), 
+  f = c(1,2,3)
+)
+
+fig <- df %>%
+  plot_ly(
+    x = ~x,
+    y = ~y,
+    frame = ~f,
+    type = 'scatter',
+    mode = 'markers',
+    showlegend = F
+  )
+
+fig
+
+```
+### Mulitple Trace Animations
+```r
+library(plotly)
+library(gapminder)
+
+df <- gapminder 
+fig <- df %>%
+  plot_ly(
+    x = ~gdpPercap, 
+    y = ~lifeExp, 
+    size = ~pop, 
+    color = ~continent, 
+    frame = ~year, 
+    text = ~country, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+library(gapminder)
+
+df <- gapminder 
+fig <- df %>%
+  plot_ly(
+    x = ~gdpPercap, 
+    y = ~lifeExp, 
+    size = ~pop, 
+    color = ~continent, 
+    frame = ~year, 
+    text = ~country, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+
+fig
+
+```
+### Add Animation Options
+```r
+library(plotly)
+
+
+
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+
+
+
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+
+fig
+
+```
+### Add Button Options
+```r
+library(plotly)
+
+
+
+fig <- fig %>%
+  animation_button(
+    x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+  )
+
+fig
+
+```
+```{r}
+library(plotly)
+
+
+
+fig <- fig %>%
+  animation_button(
+    x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+  )
+
+fig
+
+```
+
+## Cumulative animations
+### Cumulative Lines Animation
+```r
+library(plotly)
+
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+df <- txhousing 
+fig <- df %>%
+  filter(year > 2005, city %in% c("Abilene", "Bay Area"))
+fig <- fig %>% accumulate_by(~date)
+
+
+fig <- fig %>%
+  plot_ly(
+    x = ~date, 
+    y = ~median,
+    split = ~city,
+    frame = ~frame, 
+    type = 'scatter',
+    mode = 'lines', 
+    line = list(simplyfy = F)
+  )
+fig <- fig %>% layout(
+  xaxis = list(
+    title = "Date",
+    zeroline = F
+  ),
+  yaxis = list(
+    title = "Median",
+    zeroline = F
+  )
+) 
+fig <- fig %>% animation_opts(
+  frame = 100, 
+  transition = 0, 
+  redraw = FALSE
+)
+fig <- fig %>% animation_slider(
+  hide = T
+)
+fig <- fig %>% animation_button(
+  x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+)
+
+fig
+
+```
+```{r}
+library(plotly)
+
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+df <- txhousing 
+fig <- df %>%
+  filter(year > 2005, city %in% c("Abilene", "Bay Area"))
+fig <- fig %>% accumulate_by(~date)
+
+
+fig <- fig %>%
+  plot_ly(
+    x = ~date, 
+    y = ~median,
+    split = ~city,
+    frame = ~frame, 
+    type = 'scatter',
+    mode = 'lines', 
+    line = list(simplyfy = F)
+  )
+fig <- fig %>% layout(
+  xaxis = list(
+    title = "Date",
+    zeroline = F
+  ),
+  yaxis = list(
+    title = "Median",
+    zeroline = F
+  )
+) 
+fig <- fig %>% animation_opts(
+  frame = 100, 
+  transition = 0, 
+  redraw = FALSE
+)
+fig <- fig %>% animation_slider(
+  hide = T
+)
+fig <- fig %>% animation_button(
+  x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+)
+
+fig
+
+```
+### Filled-Area Animation
+```r
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+df$ID <- seq.int(nrow(df))
+
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+df <- df %>% accumulate_by(~ID)
+fig <- df %>% plot_ly(
+  x = ~ID, 
+  y = ~AAPL.Close, 
+  frame = ~frame,
+  type = 'scatter', 
+  mode = 'lines', 
+  fill = 'tozeroy', 
+  fillcolor='rgba(114, 186, 59, 0.5)',
+  line = list(color = 'rgb(114, 186, 59)'),
+  text = ~paste("Day: ", ID, "<br>Close: $", AAPL.Close), 
+  hoverinfo = 'text'
+)
+fig <- fig %>% layout(
+  title = "AAPL: Last 30 days",
+  yaxis = list(
+    title = "Close", 
+    range = c(0,250), 
+    zeroline = F,
+    tickprefix = "$"
+  ),
+  xaxis = list(
+    title = "Day", 
+    range = c(0,30), 
+    zeroline = F, 
+    showgrid = F
+  )
+) 
+fig <- fig %>% animation_opts(
+  frame = 100, 
+  transition = 0, 
+  redraw = FALSE
+)
+fig <- fig %>% animation_slider(
+  currentvalue = list(
+    prefix = "Day "
+  )
+)
+
+fig
+
+```
+```{r}
+library(plotly)
+library(quantmod)
+
+getSymbols("AAPL",src='yahoo')
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+df <- tail(df, 30)
+df$ID <- seq.int(nrow(df))
+
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+df <- df %>% accumulate_by(~ID)
+fig <- df %>% plot_ly(
+  x = ~ID, 
+  y = ~AAPL.Close, 
+  frame = ~frame,
+  type = 'scatter', 
+  mode = 'lines', 
+  fill = 'tozeroy', 
+  fillcolor='rgba(114, 186, 59, 0.5)',
+  line = list(color = 'rgb(114, 186, 59)'),
+  text = ~paste("Day: ", ID, "<br>Close: $", AAPL.Close), 
+  hoverinfo = 'text'
+)
+fig <- fig %>% layout(
+  title = "AAPL: Last 30 days",
+  yaxis = list(
+    title = "Close", 
+    range = c(0,250), 
+    zeroline = F,
+    tickprefix = "$"
+  ),
+  xaxis = list(
+    title = "Day", 
+    range = c(0,30), 
+    zeroline = F, 
+    showgrid = F
+  )
+) 
+fig <- fig %>% animation_opts(
+  frame = 100, 
+  transition = 0, 
+  redraw = FALSE
+)
+fig <- fig %>% animation_slider(
+  currentvalue = list(
+    prefix = "Day "
+  )
+)
+
+fig
+```
+
+
+<!--chapter:end:animations.Rmd-->
+
